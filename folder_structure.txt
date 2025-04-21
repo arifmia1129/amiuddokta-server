@@ -1,0 +1,73 @@
+go-network/
+├── src/
+│   ├── app/                       # Next.js App Router
+│   │   ├── admin/                 # Admin panel routes
+│   │   │   ├── dashboard/         # Dashboard page
+│   │   │   ├── users/             # User management
+│   │   │   ├── services/          # Services management
+│   │   │   ├── settings/          # System settings
+│   │   │   └── layout.tsx         # Admin layout
+│   │   ├── api/                   # API routes
+│   │   │   ├── auth/              # Authentication endpoints
+│   │   │   │   ├── login/         # Login endpoint
+│   │   │   │   ├── register/      # Registration endpoint
+│   │   │   │   └── [...nextauth]/ # NextAuth.js handlers
+│   │   │   ├── users/             # User-related endpoints
+│   │   │   ├── applications/      # Application endpoints
+│   │   │   ├── payments/          # Payment endpoints
+│   │   │   ├── services/          # Service endpoints
+│   │   │   └── uploads/           # File upload endpoint
+│   │   ├── layout.tsx             # Root layout
+│   │   └── page.tsx               # Home page
+│   ├── components/                # Reusable UI components
+│   │   ├── admin/                 # Admin-specific components
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── Dashboard/
+│   │   │   ├── Tables/
+│   │   │   └── Forms/
+│   │   ├── ui/                    # Shared UI components
+│   │   └── website/               # Website components
+│   ├── db/                        # Database configuration
+│   │   ├── index.ts               # Main DB configuration
+│   │   ├── schema/                # Schema definitions
+│   │   │   ├── users.ts
+│   │   │   ├── services.ts
+│   │   │   ├── settings.ts
+│   │   │   ├── seo.ts
+│   │   │   └── index.ts
+│   │   ├── migrations/            # DB migrations
+│   │   └── seed.ts                # Seed script
+│   ├── hooks/                     # Custom React hooks
+│   ├── lib/                       # Utility functions
+│   │   ├── auth.ts                # Authentication utilities
+│   │   ├── api.ts                 # API utilities
+│   │   ├── validation.ts          # Validation schemas
+│   │   ├── seo.ts                 # SEO utilities
+│   │   └── utils.ts               # General utilities
+│   ├── services/                  # Business logic services
+│   │   ├── user.service.ts        # User-related logic
+│   │   ├── application.service.ts
+│   │   ├── payment.service.ts
+│   │   └── email.service.ts
+│   ├── store/                     # Redux store configuration
+│   │   ├── index.ts
+│   │   ├── slices/
+│   │   └── middleware/
+│   ├── types/                     # TypeScript type definitions
+│   │   ├── users.ts
+│   │   ├── applications.ts
+│   │   ├── payments.ts
+│   │   └── common.ts
+│   └── config/                    # Application configuration
+│       ├── constants.ts
+│       ├── routes.ts
+│       └── env.ts
+├── public/                        # Static files
+├── drizzle.config.ts              # Drizzle configuration
+├── next.config.js                 # Next.js configuration
+├── tailwind.config.js             # Tailwind CSS configuration
+├── tsconfig.json                  # TypeScript configuration
+├── .env                           # Environment variables
+├── .env.example                   # Example environment variables
+└── package.json                   # Package dependencies

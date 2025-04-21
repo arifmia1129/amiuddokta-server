@@ -1,0 +1,1 @@
+ALTER TABLE "blog_posts" ALTER COLUMN "published_at" SET DATA TYPE text;

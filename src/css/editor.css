@@ -1,0 +1,31 @@
+.ql-toolbar .ql-formats {
+  /* display: flex;
+  align-items: center; */
+}
+
+.ql-custom-html {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  margin: 0 5px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ql-custom-html:hover {
+  background-color: #f3f3f3;
+}
+
+/* editor.css */
+.custom-quill {
+  height: 500px; /* Set the desired height of the Quill container */
+}
+
+.custom-quill .ql-editor {
+  min-height: 400px; /* Set the desired minimum height of the editor body */
+  max-height: 450px; /* Set the desired maximum height of the editor body */
+  overflow-y: auto; /* Enable vertical scrolling if the content exceeds the height */
+}

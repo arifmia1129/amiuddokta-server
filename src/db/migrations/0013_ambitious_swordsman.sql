@@ -1,1 +1,0 @@
-ALTER TABLE "careers" ALTER COLUMN "application_deadline" SET DATA TYPE text;

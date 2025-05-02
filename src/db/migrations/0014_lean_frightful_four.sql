@@ -1,1 +1,0 @@
-ALTER TABLE "careers" ADD COLUMN "featured_image" text;

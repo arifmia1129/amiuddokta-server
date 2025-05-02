@@ -3,53 +3,77 @@ import { z } from "zod";
 // Base user schema with common fields
 const userBaseSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  contact: z.string().min(10, "Contact number must be at least 10 characters"),
+  phone: z
+    .string()
+    .length(11, "Phone number must be exactly 11 characters")
+    .refine((value) => /^01[3-9]\d{8}$/.test(value), {
+      message: "Phone number must be a valid Bangladeshi number",
+    }),
   about: z.string().optional(),
   profile_image: z.string().optional(),
   status: z.enum(["active", "inactive", "suspended"]).default("active"),
-  nid: z.string().optional(), // New field for NID
-  years_of_experience: z.number().optional(), // New field for years of experience
-  center_name: z.string().optional(), // New field for center name
-  center_address: z.string().optional(), // New field for center address
-  reason_to_join: z.string().optional(), // New field for reason to join
+  center_name: z.string().optional(),
+  center_address: z.string().optional(),
+  division: z.number().optional(),
+  district: z.number().optional(),
+  upazila: z.number().optional(),
+  union: z.number().optional(),
 });
 
 // Schema for creating a new user
 export const createUserSchema = userBaseSchema.extend({
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["super_admin", "admin", "client", "agent"]).default("client"),
+  pin: z
+    .string()
+    .min(4, "PIN must be at least 4 digits")
+    .max(5, "PIN must be at most 5 digits"),
+  role: z
+    .enum(["super_admin", "admin", "entrepreneur"])
+    .default("entrepreneur"),
 });
 
 // Schema for updating an existing user
 export const updateUserSchema = userBaseSchema.partial().extend({
-  password: z
+  pin: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(4, "PIN must be at least 4 digits")
+    .max(5, "PIN must be at most 5 digits")
     .optional(),
-  role: z.enum(["super_admin", "admin", "client", "agent"]).optional(),
+  role: z.enum(["super_admin", "admin", "entrepreneur"]).optional(),
 });
 
 // Schema for login
 export const loginUserSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  identifier: z
+    .string()
+    .length(11, "Phone number must be exactly 11 characters")
+    .refine((value) => /^01[3-9]\d{8}$/.test(value), {
+      message: "Phone number must be a valid Bangladeshi number",
+    }),
+  pin: z
+    .string()
+    .min(4, "PIN must be at least 4 digits")
+    .max(5, "PIN must be at most 5 digits"),
 });
 
-// Schema for changing password
-export const changePasswordSchema = z
+// Schema for changing PIN
+export const changePinSchema = z
   .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z
+    currentPin: z
       .string()
-      .min(8, "New password must be at least 8 characters"),
-    confirmPassword: z
+      .min(4, "Current PIN must be at least 4 digits")
+      .max(5, "Current PIN must be at most 5 digits"),
+    newPin: z
       .string()
-      .min(8, "Confirm password must be at least 8 characters"),
+      .min(4, "New PIN must be at least 4 digits")
+      .max(5, "New PIN must be at most 5 digits"),
+    confirmPin: z
+      .string()
+      .min(4, "Confirm PIN must be at least 4 digits")
+      .max(5, "Confirm PIN must be at most 5 digits"),
   })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
+  .refine((data) => data.newPin === data.confirmPin, {
+    message: "PINs do not match",
+    path: ["confirmPin"],
   });
 
 // Schema for user filters (admin panel)
@@ -58,7 +82,7 @@ export const userFilterSchema = z.object({
   limit: z.coerce.number().int().positive().default(10),
   search: z.string().optional(),
   status: z.enum(["active", "inactive", "suspended"]).optional(),
-  role: z.enum(["super_admin", "admin", "client", "agent"]).optional(),
+  role: z.enum(["super_admin", "admin", "entrepreneur"]).optional(),
   sortBy: z.string().optional().default("created_at"),
   sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
 });
@@ -67,5 +91,5 @@ export const userFilterSchema = z.object({
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type LoginUserInput = z.infer<typeof loginUserSchema>;
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type ChangePinInput = z.infer<typeof changePinSchema>;
 export type UserFilterInput = z.infer<typeof userFilterSchema>;

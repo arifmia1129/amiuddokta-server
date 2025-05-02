@@ -676,11 +676,11 @@ const Header: React.FC<HeaderProps> = ({
           <Link href="/" className="flex items-center">
             <img
               src="/logo.png"
-              alt="Go-Network"
+              alt="Ami Uddokta"
               className="h-16 w-24 rounded"
             />
             <span className="text-gray-800 ml-2 text-xl font-bold dark:text-white">
-              GO-Network
+              Ami Uddokta
             </span>
           </Link>
         </div>

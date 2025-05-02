@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-slate-800">
-                  Welcome to Go-Network Admin
+                  Welcome to Ami Uddokta Admin
                 </h1>
                 <p className="mt-1 text-slate-500">
                   {currentTime.toLocaleDateString("en-US", {
@@ -442,7 +442,7 @@ const Dashboard: React.FC = () => {
                       Empowering Global Talent Success
                     </h2>
                     <p className="mb-6 text-blue-100">
-                      Transform careers and businesses with Go-Network's
+                      Transform careers and businesses with Ami Uddokta's
                       comprehensive suite of professional services. From
                       recruitment to training, we're your partner in growth.
                     </p>

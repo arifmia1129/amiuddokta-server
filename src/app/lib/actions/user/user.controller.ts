@@ -1,13 +1,12 @@
 "use server";
 
-// src/app/lib/actions/user/user.controller.ts
 import { ZodError } from "zod";
 import {
   createUserSchema,
   updateUserSchema,
   loginUserSchema,
   userFilterSchema,
-  changePasswordSchema,
+  changePinSchema,
 } from "./user.validation";
 import {
   setAuthCookie,
@@ -15,10 +14,10 @@ import {
   getCurrentUserSession,
 } from "@/app/lib/utils/auth.utils";
 import {
-  changePasswordService,
+  changePinService,
   createUserService,
   deleteUserService,
-  getUserByEmailService,
+  getUserByPhoneService,
   getUserByIdService,
   getUsersService,
   loginService,
@@ -45,24 +44,24 @@ export async function getUsers(params: {
   sortOrder?: "asc" | "desc";
 }): Promise<ActionResponse> {
   try {
-    // // Get the current session
-    // const session = await getCurrentUserSession();
-    // if (!session) {
-    //   return {
-    //     success: false,
-    //     message: "Authentication required",
-    //     status: 401,
-    //   };
-    // }
+    // Get the current session
+    const session = await getCurrentUserSession();
+    if (!session) {
+      return {
+        success: false,
+        message: "Authentication required",
+        status: 401,
+      };
+    }
 
-    // // Check authorization
-    // if (!["super_admin", "admin"].includes(session.role)) {
-    //   return {
-    //     success: false,
-    //     message: "You do not have permission to access this resource",
-    //     status: 403,
-    //   };
-    // }
+    // Check authorization
+    if (!["super_admin", "admin"].includes(session.role)) {
+      return {
+        success: false,
+        message: "You do not have permission to access this resource",
+        status: 403,
+      };
+    }
 
     // Prepare query parameters with defaults
     const queryParams = {
@@ -141,18 +140,17 @@ export async function getUserById(params: {
 // Create user (admin only)
 export async function createUser(data: {
   name: string;
-  email: string;
-  contact: string;
-  password: string;
+  phone: string;
+  pin: string;
   role?: string;
   status?: string;
-  nid?: string; // New field for NID
-  years_of_experience?: number; // New field for years of experience
-  center_name?: string; // New field for center name
-  center_address?: string; // New field for center address
-  reason_to_join?: string; // New field for reason to join
+  center_name?: string;
+  center_address?: string;
+  division?: number;
+  district?: number;
+  upazila?: number;
+  union?: number;
 }): Promise<ActionResponse> {
-  // console.log(data);
   try {
     // Get the current session
     const session = await getCurrentUserSession();
@@ -165,25 +163,23 @@ export async function createUser(data: {
     }
 
     // Check authorization
-    // if (!["super_admin", "admin"].includes(session.role)) {
-    //   return {
-    //     success: false,
-    //     message: "You do not have permission to create users",
-    //     status: 403,
-    //   };
-    // }
+    if (session && !["super_admin", "admin"].includes(session.role)) {
+      return {
+        success: false,
+        message: "You do not have permission to create users",
+        status: 403,
+      };
+    }
 
     // Validate request data
     const validatedData = createUserSchema.parse(data);
 
-    // console.log("validatedData:", validatedData);
-
-    // Check if email already exists
-    const existingUser = await getUserByEmailService(validatedData.email);
+    // Check if phone already exists
+    const existingUser = await getUserByPhoneService(validatedData.phone);
     if (existingUser) {
       return {
         success: false,
-        message: "Email already in use",
+        message: "Phone number already in use",
         status: 400,
       };
     }
@@ -198,7 +194,6 @@ export async function createUser(data: {
       status: 201,
     };
   } catch (error: any) {
-    // console.log(JSON.stringify(error));
     if (error instanceof ZodError) {
       return {
         success: false,
@@ -222,37 +217,44 @@ export async function updateUser(params: {
   id: string | number;
   data: {
     name?: string;
-    email?: string;
+    phone?: string;
     profile_image?: string;
     role?: string;
     status?: string;
-    nid?: string; // New field for NID
-    years_of_experience?: number; // New field for years of experience
-    center_name?: string; // New field for center name
-    center_address?: string; // New field for center address
-    reason_to_join?: string; // New field for reason to join
+    center_name?: string;
+    center_address?: string;
+    division?: number;
+    district?: number;
+    upazila?: number;
+    union?: number;
   };
 }): Promise<ActionResponse> {
+  let validatedData;
   try {
-    // Get the current session
+    if (params?.data?.role !== "super_admin") {
+      // Validate request data
+      const validatedData = updateUserSchema.parse(params.data);
 
-    // Validate request data
-    const validatedData = updateUserSchema.parse(params.data);
-
-    // Check if email is being changed and if it already exists
-    if (validatedData.email) {
-      const existingUser = await getUserByEmailService(validatedData.email);
-      if (existingUser && existingUser.id !== params.id) {
-        return {
-          success: false,
-          message: "Email already in use",
-          status: 400,
-        };
+      // Check if phone is being changed and if it already exists
+      if (validatedData.phone) {
+        const existingUser = await getUserByPhoneService(validatedData.phone);
+        if (existingUser && existingUser.id !== params.id) {
+          return {
+            success: false,
+            message: "Phone number already in use",
+            status: 400,
+          };
+        }
       }
     }
 
     // Update user
-    const user = await updateUserService(Number(params.id), validatedData);
+    const user = await updateUserService(
+      Number(params.id),
+      params?.data?.role === "super_admin"
+        ? (params?.data as any)
+        : validatedData,
+    );
 
     if (!user) {
       return {
@@ -268,6 +270,7 @@ export async function updateUser(params: {
       data: user,
     };
   } catch (error) {
+    console.log(JSON.stringify(error));
     if (error instanceof ZodError) {
       return {
         success: false,
@@ -353,8 +356,8 @@ export async function deleteUser(params: {
 
 // Login
 export async function login(data: {
-  email: string;
-  password: string;
+  phone: string;
+  pin: string;
 }): Promise<ActionResponse> {
   try {
     // Validate data
@@ -366,7 +369,7 @@ export async function login(data: {
     if (!result) {
       return {
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid phone number or PIN",
         status: 401,
       };
     }
@@ -448,10 +451,10 @@ export async function getCurrentUser(): Promise<ActionResponse> {
   }
 }
 
-// Change password
-export async function changePassword(data: {
-  currentPassword: string;
-  newPassword: string;
+// Change PIN
+export async function changePin(data: {
+  currentPin: string;
+  newPin: string;
 }): Promise<ActionResponse> {
   try {
     // Get the current session
@@ -465,10 +468,10 @@ export async function changePassword(data: {
     }
 
     // Validate data
-    const validatedData = changePasswordSchema.parse(data);
+    const validatedData = changePinSchema.parse(data);
 
-    // Change password
-    const result = await changePasswordService(session.id, validatedData);
+    // Change PIN
+    const result = await changePinService(session.id, validatedData);
 
     if (!result.success) {
       return {
@@ -480,7 +483,7 @@ export async function changePassword(data: {
 
     return {
       success: true,
-      message: "Password changed successfully",
+      message: "PIN changed successfully",
     };
   } catch (error) {
     if (error instanceof ZodError) {
@@ -492,10 +495,10 @@ export async function changePassword(data: {
       };
     }
 
-    console.error("Error changing password:", error);
+    console.error("Error changing PIN:", error);
     return {
       success: false,
-      message: "Failed to change password",
+      message: "Failed to change PIN",
       status: 500,
     };
   }

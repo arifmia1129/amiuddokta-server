@@ -5,106 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1740876929046,
-      "tag": "0000_wild_leopardon",
+      "when": 1746195279080,
+      "tag": "0000_fine_brother_voodoo",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1742045648169,
-      "tag": "0001_dry_moon_knight",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1742048250112,
-      "tag": "0002_silky_bloodstrike",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1742050031099,
-      "tag": "0003_sparkling_dazzler",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1742131826998,
-      "tag": "0004_stormy_bastion",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1742556551315,
-      "tag": "0005_conscious_nuke",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1742737123145,
-      "tag": "0006_goofy_marvel_zombies",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1743936351875,
-      "tag": "0007_new_wither",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1744527121427,
-      "tag": "0008_keen_thunderball",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1744607112679,
-      "tag": "0009_glossy_roulette",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1744611007514,
-      "tag": "0010_robust_sharon_carter",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1744626756882,
-      "tag": "0011_empty_ogun",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "7",
-      "when": 1745037836079,
-      "tag": "0012_broken_komodo",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "7",
-      "when": 1745040916563,
-      "tag": "0013_ambitious_swordsman",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1745042501787,
-      "tag": "0014_lean_frightful_four",
+      "when": 1746195864564,
+      "tag": "0001_thin_moondragon",
       "breakpoints": true
     }
   ]

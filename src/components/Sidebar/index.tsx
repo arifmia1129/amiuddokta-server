@@ -85,7 +85,7 @@ const DropdownUser = () => {
               John Doe
             </span>
             <span className="text-gray-500 dark:text-gray-400 block text-xs">
-              john.doe@go-network.com
+              john.doe@Ami Uddokta.com
             </span>
           </div>
           <hr className="border-gray-200 dark:border-gray-700 my-2" />
@@ -391,11 +391,11 @@ const Header = ({
           <Link href="/" className="flex items-center">
             <img
               src="/api/placeholder/40/40"
-              alt="Go-Network"
+              alt="Ami Uddokta"
               className="h-8 w-8 rounded"
             />
             <span className="text-gray-800 ml-2 text-xl font-bold dark:text-white">
-              GO-Network
+              Ami Uddokta
             </span>
           </Link>
         </div>

@@ -10,7 +10,6 @@ import ProfileImageUploader from "@/components/Editor/ProfileImageUploader";
 
 import {
   User,
-  Mail,
   Phone,
   Lock,
   Users,
@@ -73,7 +72,6 @@ function UserAction({ params }: any) {
     try {
       setIsLoading(true);
       const { data } = await getUserById({ id: id ? id : 0 });
-
       if (data) {
         setExistingUserInfo(data);
         setImageUrl(data?.profile_image);
@@ -103,13 +101,13 @@ function UserAction({ params }: any) {
       data.profile_image = imageUrl;
 
       if (id && existingUserInfo) {
-        delete data.password;
+        delete data.pin;
         res = await updateUser({
           id: id,
           data,
         });
       } else {
-        res = await createUser({ ...data, isFromAdmin: true });
+        res = await createUser(data);
       }
 
       if (res?.success) {
@@ -139,8 +137,8 @@ function UserAction({ params }: any) {
       icon: <BadgeCheck size={16} className="mr-2" />,
     },
     {
-      value: "agent",
-      label: "Agent",
+      value: "entrepreneur",
+      label: "Entrepreneur",
       icon: <User size={16} className="mr-2" />,
     },
   ];
@@ -197,14 +195,10 @@ function UserAction({ params }: any) {
 
           <div className="p-6">
             <div className="mb-8">
-              <div>
-                <div className="h-32overflow-hidden relative mx-auto">
-                  <ProfileImageUploader
-                    imageUrl={imageUrl}
-                    setImageUrl={setImageUrl}
-                  />
-                </div>
-              </div>
+              <ProfileImageUploader
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+              />
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -238,53 +232,42 @@ function UserAction({ params }: any) {
                 </FormField>
 
                 <FormField
-                  label="Email"
-                  error={(errors as any).email?.message}
-                  icon={<Mail size={16} />}
-                >
-                  <input
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    type="email"
-                    placeholder="Enter user's email"
-                    className="border-gray-300 w-full rounded-md border px-4 py-2.5 pl-10 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-black"
-                  />
-                </FormField>
-
-                <FormField
-                  label="Contact Number"
-                  error={(errors as any).contact?.message}
+                  label="Phone Number"
+                  error={(errors as any).phone?.message}
                   icon={<Phone size={16} />}
                 >
                   <input
-                    {...register("contact", {
-                      required: "Contact number is required",
+                    {...register("phone", {
+                      required: "Phone number is required",
+                      pattern: {
+                        value: /^01[3-9]\d{8}$/,
+                        message: "Invalid phone number",
+                      },
                     })}
-                    placeholder="Enter user's contact"
+                    placeholder="Enter user's phone number"
                     className="border-gray-300 w-full rounded-md border px-4 py-2.5 pl-10 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-black"
                   />
                 </FormField>
 
                 {!isEdit && (
                   <FormField
-                    label="Password"
-                    error={(errors as any).password?.message}
+                    label="PIN"
+                    error={(errors as any).pin?.message}
                     icon={<Lock size={16} />}
                   >
                     <input
-                      {...register("password", {
-                        required: "Password is required",
+                      {...register("pin", {
+                        required: "PIN is required",
                         minLength: {
-                          value: 6,
-                          message: "Password must be at least 6 characters",
+                          value: 4,
+                          message: "PIN must be at least 4 digits",
+                        },
+                        maxLength: {
+                          value: 5,
+                          message: "PIN must be at most 5 digits",
                         },
                       })}
-                      placeholder="Enter user's password"
+                      placeholder="Enter user's PIN"
                       className="border-gray-300 w-full rounded-md border px-4 py-2.5 pl-10 transition-colors focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-black"
                       type="password"
                     />

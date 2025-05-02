@@ -4,20 +4,21 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 // Environment variables should be properly setup in your project
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "!@#ami-uddokta-secret-key-ausk@#$";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
-// Hash password
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
+// Hash PIN
+export async function hashPin(pin: string): Promise<string> {
+  return bcrypt.hash(pin, 10);
 }
 
-// Compare password with hashed password
-export async function comparePassword(
-  password: string,
-  hashedPassword: string,
+// Compare PIN with hashed PIN
+export async function comparePin(
+  pin: string,
+  hashedPin: string,
 ): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword);
+  return bcrypt.compare(pin, hashedPin);
 }
 
 // Generate JWT token
@@ -36,8 +37,7 @@ export function verifyToken(token: string): any {
 
 // Set auth cookie
 export function setAuthCookie(token: string): void {
-  const expires = new Date(Date.now() + 360 * 24 * 60 * 60 * 1000);
-
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
   cookies().set("auth_token", token, { expires, httpOnly: true });
 }
 
@@ -52,12 +52,16 @@ export function clearAuthCookie(): void {
 }
 
 // Get current user from token
-export function getCurrentUserSession(): { id: number; role: string } | null {
+export function getCurrentUserSession(): {
+  id: number;
+  role: string;
+  phone: string;
+} | null {
   const token = getAuthCookie();
   if (!token) return null;
 
   const decoded = verifyToken(token);
   if (!decoded) return null;
 
-  return { id: decoded.id, role: decoded.role };
+  return { id: decoded.id, role: decoded.role, phone: decoded.phone };
 }

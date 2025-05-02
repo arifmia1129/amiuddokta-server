@@ -12,7 +12,7 @@ import { handleSetProjectName } from "@/utils/functions";
 import { login } from "@/app/lib/actions/user/user.controller";
 import {
   ShieldCheck,
-  Mail,
+  Phone,
   Lock,
   LogIn,
   Loader,
@@ -38,7 +38,10 @@ const SignIn: React.FC = () => {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      const res = await login(data);
+      const res = await login({
+        phone: data.phone,
+        pin: data.pin,
+      });
       if (res?.success) {
         toast.success("Successfully logged in");
         router.push("/admin/dashboard");
@@ -125,33 +128,33 @@ const SignIn: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1">
               <label
-                htmlFor="email"
+                htmlFor="phone"
                 className="block text-sm font-medium text-slate-700"
               >
-                Admin Email
+                Admin Phone
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Mail size={18} className="text-slate-400" />
+                  <Phone size={18} className="text-slate-400" />
                 </div>
                 <input
-                  id="email"
-                  type="email"
-                  placeholder="admin@gonetwork.com"
-                  {...register("email", {
-                    required: "Email Address is required",
+                  id="phone"
+                  type="text"
+                  placeholder="01XXXXXXXXX"
+                  {...register("phone", {
+                    required: "Phone number is required",
                     pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
+                      value: /^01[3-9]\d{8}$/,
+                      message: "Invalid phone number",
                     },
                   })}
                   className="mt-1 block w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2.5 pl-10 shadow-sm transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
                 />
               </div>
-              {errors.email && (
+              {errors.phone && (
                 <div className="text-red-600 mt-1.5 flex items-center text-sm">
                   <AlertCircle size={14} className="mr-1" />
-                  <span>{errors.email.message as string}</span>
+                  <span>{errors.phone.message as string}</span>
                 </div>
               )}
             </div>
@@ -159,16 +162,16 @@ const SignIn: React.FC = () => {
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="password"
+                  htmlFor="pin"
                   className="block text-sm font-medium text-slate-700"
                 >
-                  Admin Password
+                  Admin PIN
                 </label>
                 <Link
-                  href="/auth/forgot-password"
+                  href="/auth/forgot-pin"
                   className="text-xs font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Forgot password?
+                  Forgot PIN?
                 </Link>
               </div>
               <div className="relative">
@@ -176,19 +179,27 @@ const SignIn: React.FC = () => {
                   <Lock size={18} className="text-slate-400" />
                 </div>
                 <input
-                  id="password"
+                  id="pin"
                   type="password"
-                  placeholder="••••••••"
-                  {...register("password", {
-                    required: "Password is required",
+                  placeholder="•••••"
+                  {...register("pin", {
+                    required: "PIN is required",
+                    minLength: {
+                      value: 4,
+                      message: "PIN must be at least 4 digits",
+                    },
+                    maxLength: {
+                      value: 5,
+                      message: "PIN must be at most 5 digits",
+                    },
                   })}
                   className="mt-1 block w-full rounded-md border border-slate-300 bg-slate-50 px-3 py-2.5 pl-10 shadow-sm transition-all duration-200 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm"
                 />
               </div>
-              {errors.password && (
+              {errors.pin && (
                 <div className="text-red-600 mt-1.5 flex items-center text-sm">
                   <AlertCircle size={14} className="mr-1" />
-                  <span>{errors.password.message as string}</span>
+                  <span>{errors.pin.message as string}</span>
                 </div>
               )}
             </div>

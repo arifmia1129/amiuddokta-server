@@ -2,17 +2,13 @@
 
 import { db } from "@/db";
 import { eq, sql, and, or, desc, asc } from "drizzle-orm";
-import {
-  hashPassword,
-  comparePassword,
-  generateToken,
-} from "@/app/lib/utils/auth.utils";
+import { hashPin, comparePin, generateToken } from "@/app/lib/utils/auth.utils";
 import {
   CreateUserInput,
   UpdateUserInput,
   LoginUserInput,
   UserFilterInput,
-  ChangePasswordInput,
+  ChangePinInput,
 } from "./user.validation";
 import {
   createSearchCondition,
@@ -33,7 +29,7 @@ export async function getUsersService(options: UserFilterInput) {
 
   // Build search conditions
   const searchCondition = search
-    ? createSearchCondition(search, ["name", "email", "contact"])
+    ? createSearchCondition(search, ["name", "phone"])
     : sql`1=1`;
 
   // Build status condition
@@ -60,7 +56,7 @@ export async function getUsersService(options: UserFilterInput) {
   const sortableColumns = {
     id: users.id,
     name: users.name,
-    email: users.email,
+    phone: users.phone,
     role: users.role,
     status: users.status,
     created_at: users.created_at,
@@ -79,17 +75,17 @@ export async function getUsersService(options: UserFilterInput) {
     .select({
       id: users.id,
       name: users.name,
-      email: users.email,
-      contact: users.contact,
+      phone: users.phone,
       about: users.about,
       role: users.role,
       profile_image: users.profile_image,
       status: users.status,
-      nid: users.nid,
-      years_of_experience: users.years_of_experience,
       center_name: users.center_name,
       center_address: users.center_address,
-      reason_to_join: users.reason_to_join,
+      division: users.division,
+      district: users.district,
+      upazila: users.upazila,
+      union: users.union,
       last_login: users.last_login,
       created_at: users.created_at,
       updated_at: users.updated_at,
@@ -112,17 +108,17 @@ export async function getUserByIdService(id: number) {
     .select({
       id: users.id,
       name: users.name,
-      email: users.email,
-      contact: users.contact,
+      phone: users.phone,
       about: users.about,
       role: users.role,
       profile_image: users.profile_image,
       status: users.status,
-      nid: users.nid, // Include new fields
-      years_of_experience: users.years_of_experience,
       center_name: users.center_name,
       center_address: users.center_address,
-      reason_to_join: users.reason_to_join,
+      division: users.division,
+      district: users.district,
+      upazila: users.upazila,
+      union: users.union,
       last_login: users.last_login,
       created_at: users.created_at,
       updated_at: users.updated_at,
@@ -134,12 +130,12 @@ export async function getUserByIdService(id: number) {
   return result[0] || null;
 }
 
-// Get user by email
-export async function getUserByEmailService(email: string) {
+// Get user by phone
+export async function getUserByPhoneService(phone: string) {
   const result = await db
     .select()
     .from(users)
-    .where(eq(users.email, email))
+    .where(eq(users.phone, phone))
     .limit(1);
 
   return result[0] || null;
@@ -147,32 +143,32 @@ export async function getUserByEmailService(email: string) {
 
 // Create new user
 export async function createUserService(userData: CreateUserInput) {
-  // Hash password
-  const hashedPassword = await hashPassword(userData.password);
+  // Hash PIN
+  const hashedPin = await hashPin(userData.pin);
 
   // Insert user
   const result = await db
     .insert(users)
     .values({
       ...userData,
-      password: hashedPassword,
+      pin: hashedPin,
       created_at: new Date(),
       updated_at: new Date(),
     })
     .returning({
       id: users.id,
       name: users.name,
-      email: users.email,
-      contact: users.contact,
+      phone: users.phone,
       about: users.about,
       role: users.role,
       profile_image: users.profile_image,
       status: users.status,
-      nid: users.nid, // Include new fields
-      years_of_experience: users.years_of_experience,
       center_name: users.center_name,
       center_address: users.center_address,
-      reason_to_join: users.reason_to_join,
+      division: users.division,
+      district: users.district,
+      upazila: users.upazila,
+      union: users.union,
       created_at: users.created_at,
     });
 
@@ -186,9 +182,9 @@ export async function updateUserService(id: number, userData: UpdateUserInput) {
     updated_at: new Date(),
   };
 
-  // If password is provided, hash it
-  if (userData.password) {
-    updates.password = await hashPassword(userData.password);
+  // If PIN is provided, hash it
+  if (userData.pin) {
+    updates.pin = await hashPin(userData.pin);
   }
 
   // Update user
@@ -199,17 +195,17 @@ export async function updateUserService(id: number, userData: UpdateUserInput) {
     .returning({
       id: users.id,
       name: users.name,
-      email: users.email,
-      contact: users.contact,
+      phone: users.phone,
       about: users.about,
       role: users.role,
       profile_image: users.profile_image,
       status: users.status,
-      nid: users.nid, // Include new fields
-      years_of_experience: users.years_of_experience,
       center_name: users.center_name,
       center_address: users.center_address,
-      reason_to_join: users.reason_to_join,
+      division: users.division,
+      district: users.district,
+      upazila: users.upazila,
+      union: users.union,
       updated_at: users.updated_at,
     });
 
@@ -224,8 +220,9 @@ export async function deleteUserService(id: number) {
 
 // Authentication related methods
 export async function loginService(credentials: LoginUserInput) {
-  // Find user by email
-  const user = await getUserByEmailService(credentials.email);
+  // Find user by phone
+  const user = await getUserByPhoneService(credentials.phone);
+
   if (!user) {
     return null; // User not found
   }
@@ -235,13 +232,10 @@ export async function loginService(credentials: LoginUserInput) {
     return null; // User account is not active
   }
 
-  // Verify password
-  const isPasswordValid = await comparePassword(
-    credentials.password,
-    user.password,
-  );
-  if (!isPasswordValid) {
-    return null; // Invalid password
+  // Verify PIN
+  const isPinValid = await comparePin(credentials.pin, user.pin);
+  if (!isPinValid) {
+    return null; // Invalid PIN
   }
 
   // Update last login
@@ -253,7 +247,7 @@ export async function loginService(credentials: LoginUserInput) {
   // Generate token
   const token = generateToken({
     id: user.id,
-    email: user.email,
+    phone: user.phone,
     role: user.role,
   });
 
@@ -261,7 +255,7 @@ export async function loginService(credentials: LoginUserInput) {
     user: {
       id: user.id,
       name: user.name,
-      email: user.email,
+      phone: user.phone,
       role: user.role,
       profile_image: user.profile_image,
     },
@@ -269,12 +263,9 @@ export async function loginService(credentials: LoginUserInput) {
   };
 }
 
-// Change password
-export async function changePasswordService(
-  userId: number,
-  data: ChangePasswordInput,
-) {
-  // Get user with password
+// Change PIN
+export async function changePinService(userId: number, data: ChangePinInput) {
+  // Get user with PIN
   const user = await db
     .select()
     .from(users)
@@ -285,26 +276,23 @@ export async function changePasswordService(
     return { success: false, message: "User not found" };
   }
 
-  // Verify current password
-  const isCurrentPasswordValid = await comparePassword(
-    data.currentPassword,
-    user[0].password,
-  );
-  if (!isCurrentPasswordValid) {
-    return { success: false, message: "Current password is incorrect" };
+  // Verify current PIN
+  const isCurrentPinValid = await comparePin(data.currentPin, user[0].pin);
+  if (!isCurrentPinValid) {
+    return { success: false, message: "Current PIN is incorrect" };
   }
 
-  // Hash new password
-  const hashedPassword = await hashPassword(data.newPassword);
+  // Hash new PIN
+  const hashedPin = await hashPin(data.newPin);
 
-  // Update password
+  // Update PIN
   await db
     .update(users)
     .set({
-      password: hashedPassword,
+      pin: hashedPin,
       updated_at: new Date(),
     })
     .where(eq(users.id, userId));
 
-  return { success: true, message: "Password changed successfully" };
+  return { success: true, message: "PIN changed successfully" };
 }

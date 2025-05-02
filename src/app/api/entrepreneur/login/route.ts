@@ -1,18 +1,16 @@
-// src/app/api/agent/create/route.ts
-import { createUser } from "@/app/lib/actions/user/user.controller";
+// src/app/api/agent/login/route.ts
+import { login } from "@/app/lib/actions/user/user.controller";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
+    const { phone, pin } = body;
 
-    const createResult = await createUser({
-      ...body,
-      role: "agent",
-    });
+    const loginResult = await login({ phone, pin });
 
-    return NextResponse.json(createResult, {
-      status: createResult.status || 200,
+    return NextResponse.json(loginResult, {
+      status: loginResult.status || 200,
     });
   } catch (error: any) {
     return NextResponse.json(

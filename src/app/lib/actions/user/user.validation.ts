@@ -43,7 +43,7 @@ export const updateUserSchema = userBaseSchema.partial().extend({
 
 // Schema for login
 export const loginUserSchema = z.object({
-  identifier: z
+  phone: z
     .string()
     .length(11, "Phone number must be exactly 11 characters")
     .refine((value) => /^01[3-9]\d{8}$/.test(value), {

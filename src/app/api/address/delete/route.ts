@@ -1,9 +1,8 @@
-// src/app/api/agent/profile/route.ts
-import { getUserById } from "@/app/lib/actions/user/user.controller";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
+import { deleteAddress } from "@/app/lib/actions/address/address.controller";
 
-export const GET = async (req: NextRequest) => {
+export const DELETE = async (req: NextRequest) => {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
@@ -15,12 +14,26 @@ export const GET = async (req: NextRequest) => {
 
     const decodeUser = await decrypt(authHeader);
 
-    console.log(decodeUser);
+    if (!decodeUser) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized access" },
+        { status: 403 },
+      );
+    }
 
-    const profileResult = await getUserById({ id: decodeUser?.id });
+    const { id } = await req.json();
 
-    return NextResponse.json(profileResult, {
-      status: profileResult.status || 200,
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Address ID is required" },
+        { status: 400 },
+      );
+    }
+
+    const deleteResult = await deleteAddress({ id });
+
+    return NextResponse.json(deleteResult, {
+      status: deleteResult.status || 200,
     });
   } catch (error: any) {
     return NextResponse.json(
@@ -36,7 +49,7 @@ export const OPTIONS = async () => {
     headers: {
       "Access-Control-Allow-Credentials": "true",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Access-Control-Allow-Methods": "DELETE, OPTIONS",
       "Access-Control-Allow-Headers":
         "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     },

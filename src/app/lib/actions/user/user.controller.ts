@@ -150,6 +150,7 @@ export async function createUser(data: {
   district?: number;
   upazila?: number;
   union?: number;
+  ward?: any;
 }): Promise<ActionResponse> {
   try {
     // Get the current session
@@ -203,7 +204,6 @@ export async function createUser(data: {
       };
     }
 
-    console.error("Error creating user:", error);
     return {
       success: false,
       message: error?.detail || "Failed to create user",

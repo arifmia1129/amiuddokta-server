@@ -119,6 +119,7 @@ export async function getUserByIdService(id: number) {
       district: users.district,
       upazila: users.upazila,
       union: users.union,
+      ward: users.ward,
       last_login: users.last_login,
       created_at: users.created_at,
       updated_at: users.updated_at,

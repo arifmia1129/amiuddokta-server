@@ -22,6 +22,13 @@
       "when": 1746212617780,
       "tag": "0002_breezy_sage",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746813463075,
+      "tag": "0003_legal_changeling",
+      "breakpoints": true
     }
   ]
 }

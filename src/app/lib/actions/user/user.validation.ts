@@ -18,6 +18,7 @@ const userBaseSchema = z.object({
   district: z.number().optional(),
   upazila: z.number().optional(),
   union: z.number().optional(),
+  ward: z.any().optional(),
 });
 
 // Schema for creating a new user

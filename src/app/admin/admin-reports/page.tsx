@@ -43,8 +43,6 @@ export default function AdminReportList() {
         endDate,
       });
 
-      console.log(res);
-
       const { data, totalLength, summary } = res?.data || {};
       setReportList(data);
       setTotal(totalLength);

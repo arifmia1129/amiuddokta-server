@@ -1,7 +1,9 @@
 // src/app/api/agent/change-password/route.ts
-import { changePassword } from "@/app/lib/actions/user/user.controller";
 import { NextRequest, NextResponse } from "next/server";
-import { decrypt } from "@/app/lib/actions/auth/auth.controller";
+import {
+  changePasswordController,
+  decrypt,
+} from "@/app/lib/actions/auth/auth.controller";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -18,13 +20,13 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const { currentPassword, newPassword } = body;
 
-    const changePasswordResult = await changePassword({
+    const changePasswordResult = await changePasswordController({
       currentPassword,
       newPassword,
     });
 
     return NextResponse.json(changePasswordResult, {
-      status: changePasswordResult.status || 200,
+      status: (changePasswordResult as any)?.status || 200,
     });
   } catch (error: any) {
     return NextResponse.json(

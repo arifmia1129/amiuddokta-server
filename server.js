@@ -4,7 +4,9 @@ const next = require("next");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname =
-  process.env.NODE_ENV !== "production" ? "localhost" : "admin.myseba24.com";
+  process.env.NODE_ENV !== "production"
+    ? "localhost"
+    : "https://me.gonetwork.com.bd";
 const port = process.env.port || 300001;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });

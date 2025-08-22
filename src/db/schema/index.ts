@@ -11,3 +11,4 @@ export * from "./mediaCorner";
 export * from "./careers";
 export * from "./jobApplications";
 export * from "./addresses";
+export * from "./applications";

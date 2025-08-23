@@ -258,7 +258,6 @@ export const bdrisApplications = pgTable("bdris_applications", {
   formData: jsonb("form_data"),
   
   // Response metadata
-  rawHtmlResponse: text("raw_html_response"), // Store original HTML response for debugging
   responseExtracted: boolean("response_extracted").default(true), // Whether parsing was successful
   
   // Timestamps

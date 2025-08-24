@@ -118,7 +118,6 @@ export async function POST(request: NextRequest) {
           printLink,
           additionalInfo,
           formData,
-          rawHtmlResponse,
           lastChecked: new Date(),
           updated_at: new Date(),
         })
@@ -141,7 +140,6 @@ export async function POST(request: NextRequest) {
           printLink,
           additionalInfo,
           formData,
-          rawHtmlResponse,
           status: "submitted",
           responseExtracted: true,
           submittedAt: new Date(),

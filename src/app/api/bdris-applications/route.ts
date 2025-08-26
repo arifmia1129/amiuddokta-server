@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { bdrisApplications } from "@/db/schema/applications";
+import {
+  bdrisApplications,
+  bdrisApplicationErrors,
+} from "@/db/schema/applications";
 import { eq, desc, and } from "drizzle-orm";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 
@@ -118,6 +121,7 @@ export async function POST(request: NextRequest) {
           printLink,
           additionalInfo,
           formData,
+          rawHtmlResponse,
           lastChecked: new Date(),
           updated_at: new Date(),
         })
@@ -140,6 +144,7 @@ export async function POST(request: NextRequest) {
           printLink,
           additionalInfo,
           formData,
+          rawHtmlResponse,
           status: "submitted",
           responseExtracted: true,
           submittedAt: new Date(),

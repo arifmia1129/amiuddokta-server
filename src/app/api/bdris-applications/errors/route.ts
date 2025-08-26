@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
         errorMessage,
         applicationType,
         formData,
+        rawResponse,
         isResolved: false,
       })
       .returning();

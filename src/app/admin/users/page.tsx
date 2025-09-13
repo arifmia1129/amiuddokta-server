@@ -21,6 +21,9 @@ import {
   ChevronDown,
   Filter,
   X,
+  Key,
+  RefreshCw,
+  UserCheck,
 } from "lucide-react";
 
 // Improved Pagination component import
@@ -57,9 +60,9 @@ export default function UserList() {
   });
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
-  // Status and role options
-  const statusOptions = ["active", "inactive", "suspended", "pending"];
-  const roleOptions = ["super_admin", "admin", "user"];
+  // Status and role options for BDRIS
+  const statusOptions = ["active", "inactive", "suspended"];
+  const roleOptions = ["super_admin", "admin", "entrepreneur"];
   const sortByOptions = [
     { value: "created_at", label: "Date Created" },
     { value: "name", label: "Name" },
@@ -243,6 +246,83 @@ export default function UserList() {
       handleFilterChange("sortBy", "created_at");
       handleFilterChange("sortOrder", "desc");
     }
+  };
+
+  const handlePasswordReset = async (userId: number, userName: string) => {
+    confirmAlert({
+      title: "Reset Password",
+      message: `Are you sure you want to reset the password for ${userName}? A new temporary password will be generated.`,
+      buttons: [
+        {
+          label: "Reset Password",
+          className: "bg-blue-500 text-white px-4 py-2 rounded-md",
+          onClick: async () => {
+            try {
+              const response = await fetch(`/api/auth/reset-password`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, isAdminReset: true }),
+              });
+
+              const result = await response.json();
+              
+              if (result.success) {
+                toast.success(`Password reset successfully. New temporary password: ${result.temporaryPassword}`);
+              } else {
+                toast.error("Failed to reset password");
+              }
+            } catch (error) {
+              toast.error("Failed to reset password");
+              console.error("Password reset error:", error);
+            }
+          },
+        },
+        {
+          label: "Cancel",
+          className: "bg-gray-200 text-gray-800 px-4 py-2 rounded-md ml-2",
+        },
+      ],
+    });
+  };
+
+  const handleStatusToggle = async (userId: number, currentStatus: string, userName: string) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    
+    confirmAlert({
+      title: `${newStatus === "active" ? "Activate" : "Deactivate"} User`,
+      message: `Are you sure you want to ${newStatus === "active" ? "activate" : "deactivate"} ${userName}?`,
+      buttons: [
+        {
+          label: newStatus === "active" ? "Activate" : "Deactivate",
+          className: `${newStatus === "active" ? "bg-green-500" : "bg-red-500"} text-white px-4 py-2 rounded-md`,
+          onClick: async () => {
+            try {
+              const response = await fetch(`/api/auth/update-user-status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, status: newStatus }),
+              });
+
+              const result = await response.json();
+              
+              if (result.success) {
+                toast.success(`User ${newStatus === "active" ? "activated" : "deactivated"} successfully`);
+                handleGetData(); // Refresh the data
+              } else {
+                toast.error("Failed to update user status");
+              }
+            } catch (error) {
+              toast.error("Failed to update user status");
+              console.error("Status update error:", error);
+            }
+          },
+        },
+        {
+          label: "Cancel",
+          className: "bg-gray-200 text-gray-800 px-4 py-2 rounded-md ml-2",
+        },
+      ],
+    });
   };
 
   const toggleSort = () => {
@@ -578,18 +658,38 @@ export default function UserList() {
                       )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3.5 text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
+                      <div className="flex items-center justify-end space-x-1">
                         <Link
                           href={`/admin/users/edit?id=${user?.id}`}
                           className="rounded-full p-1 text-blue-600 hover:bg-blue-50 hover:text-blue-900 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+                          title="Edit User"
                         >
-                          <Edit className="h-5 w-5" />
+                          <Edit className="h-4 w-4" />
                         </Link>
+                        <button
+                          onClick={() => handlePasswordReset(user?.id, user?.name)}
+                          className="rounded-full p-1 text-orange-600 hover:bg-orange-50 hover:text-orange-900 dark:text-orange-400 dark:hover:bg-orange-900/20 dark:hover:text-orange-300"
+                          title="Reset Password"
+                        >
+                          <Key className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleStatusToggle(user?.id, user?.status, user?.name)}
+                          className={`rounded-full p-1 ${
+                            user?.status === "active" 
+                              ? "text-red-600 hover:bg-red-50 hover:text-red-900 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+                              : "text-green-600 hover:bg-green-50 hover:text-green-900 dark:text-green-400 dark:hover:bg-green-900/20 dark:hover:text-green-300"
+                          }`}
+                          title={user?.status === "active" ? "Deactivate User" : "Activate User"}
+                        >
+                          <UserCheck className="h-4 w-4" />
+                        </button>
                         <button
                           onClick={() => handleDelete(user?.id)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full p-1"
+                          title="Delete User"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

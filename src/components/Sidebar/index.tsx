@@ -127,7 +127,7 @@ const DropdownUser = () => {
   );
 };
 
-// Define route access by role
+// Define route access by role - cleaned up for BDRIS functionality only
 const roleRoutes = {
   super_admin: [
     {
@@ -136,142 +136,40 @@ const roleRoutes = {
       icon: <Home className="h-4 w-4" />,
     },
     {
+      title: "BDRIS Applications",
+      href: "/admin/bdris-applications",
+      icon: <FileText className="h-4 w-4" />,
+      submenu: [
+        {
+          title: "All Applications",
+          href: "/admin/bdris-applications",
+        },
+        {
+          title: "Failed Applications",
+          href: "/admin/bdris-applications/errors",
+        },
+        {
+          title: "Application Reports",
+          href: "/admin/admin-reports",
+        },
+      ],
+    },
+    {
       title: "Users Management",
       href: "/admin/users",
       icon: <Users className="h-4 w-4" />,
       submenu: [
         {
-          title: "Add User",
-          href: "/admin/users/add",
-        },
-        {
           title: "All Users",
           href: "/admin/users",
         },
         {
-          title: "Agent Onboarding",
-          href: "/admin/users/agent-onboard",
-        },
-      ],
-    },
-    {
-      title: "Services",
-      href: "/admin/services",
-      icon: <Briefcase className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "Recruiting & Staffing",
-          href: "/admin/services/recruiting",
+          title: "Add User",
+          href: "/admin/users/add",
         },
         {
-          title: "Training & Development",
-          href: "/admin/services/training",
-        },
-        {
-          title: "E-Learning Solutions",
-          href: "/admin/services/e-learning",
-        },
-        {
-          title: "E-Commerce",
-          href: "/admin/services/e-commerce",
-        },
-        {
-          title: "Visa Assistance",
-          href: "/admin/services/visa",
-        },
-        {
-          title: "Travel & Ticketing",
-          href: "/admin/services/travel",
-        },
-      ],
-    },
-    {
-      title: "Payment Management",
-      href: "/admin/payment-methods",
-      icon: <DollarSign className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "Payment Methods",
-          href: "/admin/payment-methods",
-        },
-        {
-          title: "Recharge Requests",
-          href: "/admin/recharge-requests",
-        },
-        {
-          title: "Agent Fees",
-          href: "/admin/agent-fees",
-        },
-      ],
-    },
-    {
-      title: "Applications",
-      href: "/admin/applications",
-      icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      title: "Content Management",
-      href: "/admin/content",
-      icon: <BookOpen className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "Pages",
-          href: "/admin/content/pages",
-        },
-        {
-          title: "Blog",
-          href: "/admin/content/blog",
-        },
-        {
-          title: "Media Library",
-          href: "/admin/content/media",
-        },
-        {
-          title: "FAQ",
-          href: "/admin/content/faq",
-        },
-      ],
-    },
-    {
-      title: "Support & Communication",
-      href: "/admin/support",
-      icon: <MessageSquare className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "Support Tickets",
-          href: "/admin/support/tickets",
-        },
-        {
-          title: "Email Campaigns",
-          href: "/admin/support/email",
-        },
-        {
-          title: "Notifications",
-          href: "/admin/support/notifications",
-        },
-      ],
-    },
-    {
-      title: "Reports",
-      href: "/admin/reports",
-      icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      title: "Settings",
-      href: "/admin/settings",
-      icon: <Settings className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "General Settings",
-          href: "/admin/settings/general",
-        },
-        {
-          title: "SEO Settings",
-          href: "/admin/settings/seo",
-        },
-        {
-          title: "Language Settings",
-          href: "/admin/settings/language",
+          title: "User Settings",
+          href: "/admin/users/settings",
         },
       ],
     },
@@ -283,61 +181,36 @@ const roleRoutes = {
       icon: <Home className="h-4 w-4" />,
     },
     {
-      title: "Applications",
-      href: "/admin/applications",
+      title: "BDRIS Applications",
+      href: "/admin/bdris-applications",
       icon: <FileText className="h-4 w-4" />,
       submenu: [
         {
-          title: "New Applications",
-          href: "/admin/applications",
+          title: "All Applications",
+          href: "/admin/bdris-applications",
         },
         {
-          title: "History",
-          href: "/admin/applications/history",
+          title: "Failed Applications",
+          href: "/admin/bdris-applications/errors",
         },
       ],
     },
     {
-      title: "Content Management",
-      href: "/admin/content",
-      icon: <BookOpen className="h-4 w-4" />,
-      submenu: [
-        {
-          title: "Pages",
-          href: "/admin/content/pages",
-        },
-        {
-          title: "Blog",
-          href: "/admin/content/blog",
-        },
-      ],
-    },
-    {
-      title: "Support Tickets",
-      href: "/admin/support",
-      icon: <MessageSquare className="h-4 w-4" />,
+      title: "Users Management",
+      href: "/admin/users",
+      icon: <Users className="h-4 w-4" />,
     },
   ],
-  agent: [
+  entrepreneur: [
     {
       title: "Dashboard",
-      href: "/agent/dashboard",
+      href: "/admin/dashboard",
       icon: <Home className="h-4 w-4" />,
     },
     {
       title: "My Applications",
-      href: "/agent/applications",
+      href: "/admin/bdris-applications",
       icon: <FileText className="h-4 w-4" />,
-    },
-    {
-      title: "My Account",
-      href: "/agent/account",
-      icon: <User className="h-4 w-4" />,
-    },
-    {
-      title: "Support",
-      href: "/agent/support",
-      icon: <MessageSquare className="h-4 w-4" />,
     },
   ],
 };

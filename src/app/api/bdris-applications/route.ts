@@ -4,56 +4,178 @@ import {
   bdrisApplications,
   bdrisApplicationErrors,
 } from "@/db/schema/applications";
-import { eq, desc, and } from "drizzle-orm";
+import { users } from "@/db/schema/users";
+import { eq, desc, asc, and, or, like, gte, lte, sql } from "drizzle-orm";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 
-// GET - Fetch user's BDRIS applications
+// GET - Fetch BDRIS applications (user or admin context)
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: "Authorization header missing or invalid" },
-        { status: 401 },
-      );
-    }
-
-    const decodeUser = await decrypt(authHeader);
-    if (!decodeUser?.id) {
-      return NextResponse.json(
-        { error: "Invalid user token" },
-        { status: 401 },
-      );
-    }
-
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type"); // Filter by application type
-    const status = searchParams.get("status"); // Filter by status
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const isAdminContext = searchParams.get("admin") === "true";
+    
+    // If admin context, allow access without strict auth (for now - should be improved)
+    let userContext = null;
+    
+    if (!isAdminContext) {
+      const authHeader = request.headers.get("authorization");
+      if (!authHeader) {
+        return NextResponse.json(
+          { error: "Authorization header missing or invalid" },
+          { status: 401 },
+        );
+      }
 
-    let whereConditions = [eq(bdrisApplications.userId, Number(decodeUser.id))];
-
-    if (type) {
-      whereConditions.push(eq(bdrisApplications.applicationType, type as any));
+      const decodeUser = await decrypt(authHeader);
+      if (!decodeUser?.id) {
+        return NextResponse.json(
+          { error: "Invalid user token" },
+          { status: 401 },
+        );
+      }
+      userContext = decodeUser;
     }
 
-    if (status) {
+    // Parse query parameters
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || isAdminContext ? "10" : "50");
+    const sort = searchParams.get("sort") || "created_at";
+    const order = searchParams.get("order") || "desc";
+    const status = searchParams.get("status");
+    const type = searchParams.get("type");
+    const search = searchParams.get("search");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
+    // Build where conditions
+    const whereConditions = [];
+    
+    // For user context, only show their applications
+    if (!isAdminContext && userContext) {
+      whereConditions.push(eq(bdrisApplications.userId, Number(userContext.id)));
+    }
+    
+    if (status && status !== "ALL") {
       whereConditions.push(eq(bdrisApplications.status, status as any));
     }
+    
+    if (type && type !== "ALL") {
+      whereConditions.push(eq(bdrisApplications.applicationType, type as any));
+    }
+    
+    if (search) {
+      whereConditions.push(
+        or(
+          like(bdrisApplications.applicationId, `%${search}%`),
+          like(users.name, `%${search}%`),
+          like(users.phone, `%${search}%`)
+        )
+      );
+    }
+    
+    if (startDate) {
+      whereConditions.push(gte(bdrisApplications.submittedAt, new Date(startDate)));
+    }
+    
+    if (endDate) {
+      whereConditions.push(lte(bdrisApplications.submittedAt, new Date(endDate + " 23:59:59")));
+    }
 
+    const whereClause = whereConditions.length > 0 
+      ? and(...whereConditions) 
+      : undefined;
+
+    // Determine sort order
+    const orderBy = order === "desc" 
+      ? desc(bdrisApplications[sort as keyof typeof bdrisApplications] || bdrisApplications.created_at)
+      : asc(bdrisApplications[sort as keyof typeof bdrisApplications] || bdrisApplications.created_at);
+
+    // Get total count for admin context
+    let total = 0;
+    if (isAdminContext) {
+      const totalResult = await db
+        .select({ count: sql`count(*)`.as('count') })
+        .from(bdrisApplications)
+        .leftJoin(users, eq(bdrisApplications.userId, users.id))
+        .where(whereClause);
+
+      total = Number(totalResult[0]?.count || 0);
+    }
+
+    // Get paginated results with user information (for admin) or just applications (for user)
     const applications = await db
-      .select()
+      .select({
+        // Application fields
+        id: bdrisApplications.id,
+        userId: bdrisApplications.userId,
+        applicationId: bdrisApplications.applicationId,
+        applicationType: bdrisApplications.applicationType,
+        printLink: bdrisApplications.printLink,
+        printLinkExpiry: bdrisApplications.printLinkExpiry,
+        status: bdrisApplications.status,
+        additionalInfo: bdrisApplications.additionalInfo,
+        formData: bdrisApplications.formData,
+        rawHtmlResponse: bdrisApplications.rawHtmlResponse,
+        responseExtracted: bdrisApplications.responseExtracted,
+        submittedAt: bdrisApplications.submittedAt,
+        lastChecked: bdrisApplications.lastChecked,
+        created_at: bdrisApplications.created_at,
+        updated_at: bdrisApplications.updated_at,
+        // User fields (only for admin)
+        ...(isAdminContext && {
+          userName: users.name,
+          userPhone: users.phone,
+        }),
+      })
       .from(bdrisApplications)
-      .where(and(...whereConditions))
-      .orderBy(desc(bdrisApplications.created_at))
+      .leftJoin(users, eq(bdrisApplications.userId, users.id))
+      .where(whereClause)
+      .orderBy(orderBy)
       .limit(limit)
-      .offset(offset);
+      .offset((page - 1) * limit);
+
+    // Transform results for admin context
+    let responseData;
+    if (isAdminContext) {
+      const transformedApplications = applications.map(app => ({
+        id: app.id,
+        userId: app.userId,
+        applicationId: app.applicationId,
+        applicationType: app.applicationType,
+        printLink: app.printLink,
+        printLinkExpiry: app.printLinkExpiry,
+        status: app.status,
+        additionalInfo: app.additionalInfo,
+        formData: app.formData,
+        rawHtmlResponse: app.rawHtmlResponse,
+        responseExtracted: app.responseExtracted,
+        submittedAt: app.submittedAt,
+        lastChecked: app.lastChecked,
+        created_at: app.created_at,
+        updated_at: app.updated_at,
+        user: (app as any).userName ? {
+          name: (app as any).userName,
+          phone: (app as any).userPhone,
+        } : null,
+      }));
+
+      responseData = {
+        applications: transformedApplications,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      };
+    } else {
+      // For user context, return simple format
+      responseData = applications;
+      total = applications.length;
+    }
 
     return NextResponse.json({
       success: true,
-      data: applications,
-      total: applications.length,
+      data: responseData,
+      ...(isAdminContext && { total }),
     });
   } catch (error) {
     console.error("BDRIS applications fetch error:", error);

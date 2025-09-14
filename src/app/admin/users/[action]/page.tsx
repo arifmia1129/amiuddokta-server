@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { getSessionController } from "@/app/lib/actions/auth/auth.controller";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import SimpleLayout from "@/components/Layouts/SimpleLayout";
 import ProfileImageUploader from "@/components/Editor/ProfileImageUploader";
 
 import {
@@ -151,19 +151,19 @@ function UserAction({ params }: any) {
 
   if (isLoading && id) {
     return (
-      <DefaultLayout>
+      <SimpleLayout>
         <div className="flex h-64 items-center justify-center rounded-lg bg-white p-8 shadow-lg dark:bg-black">
           <div className="text-center">
             <Loader2 size={32} className="mx-auto animate-spin text-blue-500" />
             <p className="text-gray-600 mt-4">Loading user data...</p>
           </div>
         </div>
-      </DefaultLayout>
+      </SimpleLayout>
     );
   }
 
   return (
-    <DefaultLayout>
+    <SimpleLayout>
       <div className="mx-auto max-w-5xl dark:bg-black">
         <div className="mb-4">
           <button
@@ -381,7 +381,7 @@ function UserAction({ params }: any) {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </SimpleLayout>
   );
 }
 

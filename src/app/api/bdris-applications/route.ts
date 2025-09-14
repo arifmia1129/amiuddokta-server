@@ -41,7 +41,6 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || isAdminContext ? "10" : "50");
     const sort = searchParams.get("sort") || "created_at";
     const order = searchParams.get("order") || "desc";
-    const status = searchParams.get("status");
     const type = searchParams.get("type");
     const search = searchParams.get("search");
     const startDate = searchParams.get("startDate");
@@ -53,10 +52,6 @@ export async function GET(request: NextRequest) {
     // For user context, only show their applications
     if (!isAdminContext && userContext) {
       whereConditions.push(eq(bdrisApplications.userId, Number(userContext.id)));
-    }
-    
-    if (status && status !== "ALL") {
-      whereConditions.push(eq(bdrisApplications.status, status as any));
     }
     
     if (type && type !== "ALL") {
@@ -85,10 +80,37 @@ export async function GET(request: NextRequest) {
       ? and(...whereConditions) 
       : undefined;
 
-    // Determine sort order
-    const orderBy = order === "desc" 
-      ? desc(bdrisApplications[sort as keyof typeof bdrisApplications] || bdrisApplications.created_at)
-      : asc(bdrisApplications[sort as keyof typeof bdrisApplications] || bdrisApplications.created_at);
+    // Determine sort order using sql literals
+    let orderBy;
+    if (order === "desc") {
+      switch(sort) {
+        case "applicationId":
+          orderBy = desc(bdrisApplications.applicationId);
+          break;
+        case "applicationType":
+          orderBy = desc(bdrisApplications.applicationType);
+          break;
+        case "submittedAt":
+          orderBy = desc(bdrisApplications.submittedAt);
+          break;
+        default:
+          orderBy = desc(bdrisApplications.created_at);
+      }
+    } else {
+      switch(sort) {
+        case "applicationId":
+          orderBy = asc(bdrisApplications.applicationId);
+          break;
+        case "applicationType":
+          orderBy = asc(bdrisApplications.applicationType);
+          break;
+        case "submittedAt":
+          orderBy = asc(bdrisApplications.submittedAt);
+          break;
+        default:
+          orderBy = asc(bdrisApplications.created_at);
+      }
+    }
 
     // Get total count for admin context
     let total = 0;
@@ -110,9 +132,6 @@ export async function GET(request: NextRequest) {
         userId: bdrisApplications.userId,
         applicationId: bdrisApplications.applicationId,
         applicationType: bdrisApplications.applicationType,
-        printLink: bdrisApplications.printLink,
-        printLinkExpiry: bdrisApplications.printLinkExpiry,
-        status: bdrisApplications.status,
         additionalInfo: bdrisApplications.additionalInfo,
         formData: bdrisApplications.formData,
         rawHtmlResponse: bdrisApplications.rawHtmlResponse,
@@ -142,9 +161,6 @@ export async function GET(request: NextRequest) {
         userId: app.userId,
         applicationId: app.applicationId,
         applicationType: app.applicationType,
-        printLink: app.printLink,
-        printLinkExpiry: app.printLinkExpiry,
-        status: app.status,
         additionalInfo: app.additionalInfo,
         formData: app.formData,
         rawHtmlResponse: app.rawHtmlResponse,
@@ -208,7 +224,6 @@ export async function POST(request: NextRequest) {
     const {
       applicationId,
       applicationType,
-      printLink,
       additionalInfo,
       formData,
       rawHtmlResponse,
@@ -240,7 +255,6 @@ export async function POST(request: NextRequest) {
       const updated = await db
         .update(bdrisApplications)
         .set({
-          printLink,
           additionalInfo,
           formData,
           rawHtmlResponse,
@@ -263,11 +277,9 @@ export async function POST(request: NextRequest) {
           userId: Number(decodeUser.id),
           applicationId,
           applicationType,
-          printLink,
           additionalInfo,
           formData,
           rawHtmlResponse,
-          status: "submitted",
           responseExtracted: true,
           submittedAt: new Date(),
         })

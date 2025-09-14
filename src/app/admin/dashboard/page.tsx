@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import SimpleLayout from "@/components/Layouts/SimpleLayout";
 
 const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -36,102 +36,102 @@ const Dashboard: React.FC = () => {
 
   const stats = [
     {
-      title: "Successful Placements",
-      value: "15,432",
+      title: "Total Applications",
+      value: "1,234",
+      change: "+8%",
+      icon: <FileText className="h-5 w-5 text-emerald-500" />,
+    },
+    {
+      title: "Pending Applications",
+      value: "45",
       change: "+12%",
-      icon: <CheckCircle className="h-5 w-5 text-emerald-500" />,
+      icon: <Clock className="h-5 w-5 text-amber-500" />,
     },
     {
-      title: "Global Partners",
-      value: "53",
+      title: "Approved Applications",
+      value: "987",
       change: "+5%",
-      icon: <Globe className="h-5 w-5 text-blue-500" />,
+      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
     },
     {
-      title: "Client Satisfaction",
-      value: "98%",
-      change: "+2%",
-      icon: <Award className="h-5 w-5 text-amber-500" />,
-    },
-    {
-      title: "Industry Awards",
-      value: "12",
-      change: "+2",
-      icon: <TrendingUp className="h-5 w-5 text-indigo-500" />,
+      title: "Registered Users",
+      value: "856",
+      change: "+15%",
+      icon: <Users className="h-5 w-5 text-blue-500" />,
     },
   ];
 
   const recentApplications = [
     {
-      id: "APP-8721",
-      name: "John Doe",
-      role: "Senior Developer",
-      company: "TechSolutions Ltd.",
+      id: "BDRIS-2025-001",
+      name: "Mohammad Rahman",
+      type: "Birth Certificate",
+      nid: "1234567890123",
       status: "pending",
-      date: "Apr 11, 2025",
+      date: "Sep 12, 2025",
     },
     {
-      id: "APP-8720",
-      name: "Sarah Johnson",
-      role: "Project Manager",
-      company: "Innovate Inc.",
+      id: "BDRIS-2025-002",
+      name: "Fatima Khatun",
+      type: "Death Certificate",
+      nid: "9876543210987",
       status: "approved",
-      date: "Apr 10, 2025",
+      date: "Sep 11, 2025",
     },
     {
-      id: "APP-8719",
-      name: "Michael Chen",
-      role: "Data Analyst",
-      company: "DataCorp",
-      status: "rejected",
-      date: "Apr 10, 2025",
+      id: "BDRIS-2025-003",
+      name: "Abdul Karim",
+      type: "Birth Certificate",
+      nid: "5678901234567",
+      status: "failed",
+      date: "Sep 10, 2025",
     },
     {
-      id: "APP-8718",
-      name: "Emma Williams",
-      role: "UX Designer",
-      company: "DesignHub",
+      id: "BDRIS-2025-004",
+      name: "Rashida Begum",
+      type: "Death Certificate",
+      nid: "3456789012345",
       status: "approved",
-      date: "Apr 09, 2025",
+      date: "Sep 09, 2025",
     },
     {
-      id: "APP-8717",
-      name: "Arafat Rahman",
-      role: "Backend Developer",
-      company: "TechSolutions Ltd.",
+      id: "BDRIS-2025-005",
+      name: "Shahid Ahmed",
+      type: "Birth Certificate",
+      nid: "7890123456789",
       status: "pending",
-      date: "Apr 09, 2025",
+      date: "Sep 09, 2025",
     },
   ];
 
   const announcements = [
     {
-      title: "New service category added",
-      description: "Digital Marketing services now available for clients",
-      date: "Apr 12, 2025",
+      title: "BDRIS API Update",
+      description: "New birth certificate validation rules implemented",
+      date: "Sep 12, 2025",
     },
     {
       title: "System maintenance",
       description:
-        "Scheduled downtime on Apr 15, 2025 from 2:00 AM to 4:00 AM UTC",
-      date: "Apr 11, 2025",
+        "Scheduled downtime on Sep 15, 2025 from 2:00 AM to 4:00 AM UTC",
+      date: "Sep 11, 2025",
     },
     {
-      title: "Quarterly report due",
-      description: "Please submit your Q1 reports by April 20",
-      date: "Apr 10, 2025",
+      title: "Monthly report reminder",
+      description: "Please review and process pending applications by Sep 20",
+      date: "Sep 10, 2025",
     },
   ];
 
   const tasks = [
-    { title: "Review pending applications", priority: "high", count: 12 },
-    { title: "Update service descriptions", priority: "medium", count: 5 },
-    { title: "Respond to support tickets", priority: "high", count: 8 },
-    { title: "Prepare monthly newsletter", priority: "low", count: 1 },
+    { title: "Review pending BDRIS applications", priority: "high", count: 45 },
+    { title: "Process failed applications", priority: "high", count: 12 },
+    { title: "Update user profiles", priority: "medium", count: 8 },
+    { title: "Generate monthly report", priority: "low", count: 1 },
   ];
 
   return (
-    <DefaultLayout>
+    <SimpleLayout>
       <div className="flex min-h-screen flex-col bg-slate-50">
         {/* Welcome header section */}
         <div className="border-b border-slate-200 bg-white px-6 py-8">
@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-slate-800">
-                  Welcome to Ami Uddokta Admin
+                  BDRIS Admin Dashboard
                 </h1>
                 <p className="mt-1 text-slate-500">
                   {currentTime.toLocaleDateString("en-US", {
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
                         Recent Applications
                       </h2>
                       <Link
-                        href="/admin/applications"
+                        href="/admin/bdris-applications"
                         className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-700"
                       >
                         View all
@@ -241,7 +241,7 @@ const Dashboard: React.FC = () => {
                                 </span>
                               </div>
                               <p className="text-sm text-slate-500">
-                                {app.role} at {app.company}
+                                {app.type} • NID: {app.nid}
                               </p>
                             </div>
                           </div>
@@ -258,7 +258,7 @@ const Dashboard: React.FC = () => {
                               className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                                 app.status === "approved"
                                   ? "bg-emerald-100 text-emerald-800"
-                                  : app.status === "rejected"
+                                  : app.status === "failed"
                                     ? "bg-red-100 text-red-800"
                                     : "bg-amber-100 text-amber-800"
                               }`}
@@ -276,10 +276,10 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="border-t border-slate-200 bg-slate-50 p-4 text-center">
                     <Link
-                      href="/admin/applications"
+                      href="/admin/bdris-applications"
                       className="text-sm font-medium text-blue-600 hover:text-blue-700"
                     >
-                      See all applications
+                      See all BDRIS applications
                     </Link>
                   </div>
                 </div>
@@ -378,37 +378,25 @@ const Dashboard: React.FC = () => {
                       title: "Users",
                       icon: <Users className="h-5 w-5" />,
                       href: "/admin/users",
-                      count: "2.3k",
+                      count: "856",
                     },
                     {
-                      title: "Applications",
+                      title: "BDRIS Applications",
                       icon: <FileText className="h-5 w-5" />,
-                      href: "/admin/applications",
+                      href: "/admin/bdris-applications",
+                      count: "1,234",
+                    },
+                    {
+                      title: "Pending Reviews",
+                      icon: <Clock className="h-5 w-5" />,
+                      href: "/admin/bdris-applications?status=pending",
                       count: "45",
                     },
                     {
-                      title: "Services",
-                      icon: <Briefcase className="h-5 w-5" />,
-                      href: "/admin/services",
+                      title: "Failed Applications",
+                      icon: <AlertCircle className="h-5 w-5" />,
+                      href: "/admin/bdris-applications?status=failed",
                       count: "12",
-                    },
-                    {
-                      title: "Content",
-                      icon: <BookOpen className="h-5 w-5" />,
-                      href: "/admin/content",
-                      count: "34",
-                    },
-                    {
-                      title: "Reports",
-                      icon: <TrendingUp className="h-5 w-5" />,
-                      href: "/admin/reports",
-                      count: "7",
-                    },
-                    {
-                      title: "Settings",
-                      icon: <Calendar className="h-5 w-5" />,
-                      href: "/admin/settings",
-                      count: "",
                     },
                   ].map((item, index) => (
                     <Link
@@ -439,12 +427,12 @@ const Dashboard: React.FC = () => {
                 <div className="grid items-center gap-8 md:grid-cols-2">
                   <div>
                     <h2 className="mb-2 text-xl font-bold text-white md:text-2xl">
-                      Empowering Global Talent Success
+                      BDRIS Management System
                     </h2>
                     <p className="mb-6 text-blue-100">
-                      Transform careers and businesses with Ami Uddokta's
-                      comprehensive suite of professional services. From
-                      recruitment to training, we're your partner in growth.
+                      Streamline birth and death certificate processing with our
+                      comprehensive BDRIS integration. Monitor applications,
+                      manage users, and ensure efficient service delivery.
                     </p>
                     <div className="grid grid-cols-2 gap-4">
                       {stats.slice(0, 2).map((stat, index) => (
@@ -464,13 +452,13 @@ const Dashboard: React.FC = () => {
                     <div className="space-y-4">
                       <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
                         <p className="text-sm text-blue-100">
-                          Client Satisfaction
+                          Success Rate
                         </p>
-                        <p className="text-2xl font-bold text-white">98%</p>
+                        <p className="text-2xl font-bold text-white">94%</p>
                       </div>
                       <div className="rounded-lg bg-white/10 p-4 backdrop-blur-sm">
-                        <p className="text-sm text-blue-100">Industry Awards</p>
-                        <p className="text-2xl font-bold text-white">10+</p>
+                        <p className="text-sm text-blue-100">Processing Time</p>
+                        <p className="text-2xl font-bold text-white">2.5d</p>
                       </div>
                     </div>
                     <div className="relative flex h-full items-center justify-center">
@@ -493,7 +481,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </SimpleLayout>
   );
 };
 

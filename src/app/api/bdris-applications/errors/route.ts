@@ -1,7 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { bdrisApplicationErrors } from "@/db/schema";
+import { users } from "@/db/schema";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
+import { eq, desc } from "drizzle-orm";
+
+// GET - Retrieve BDRIS application errors (admin only)
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const offset = (page - 1) * limit;
+
+    // Fetch errors with user information
+    const errors = await db
+      .select({
+        id: bdrisApplicationErrors.id,
+        userId: bdrisApplicationErrors.userId,
+        errorType: bdrisApplicationErrors.errorType,
+        errorMessage: bdrisApplicationErrors.errorMessage,
+        applicationType: bdrisApplicationErrors.applicationType,
+        formData: bdrisApplicationErrors.formData,
+        rawResponse: bdrisApplicationErrors.rawResponse,
+        isResolved: bdrisApplicationErrors.isResolved,
+        attemptedAt: bdrisApplicationErrors.created_at,
+        user: {
+          name: users.name,
+          phone: users.phone,
+        },
+      })
+      .from(bdrisApplicationErrors)
+      .leftJoin(users, eq(bdrisApplicationErrors.userId, users.id))
+      .orderBy(desc(bdrisApplicationErrors.created_at))
+      .limit(limit)
+      .offset(offset);
+
+    // Get total count
+    const totalResult = await db
+      .select()
+      .from(bdrisApplicationErrors);
+    
+    const total = totalResult.length;
+
+    return NextResponse.json({
+      success: true,
+      data: errors,
+      total,
+      page,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching application errors:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch application errors" },
+      { status: 500 }
+    );
+  }
+}
 
 // POST - Log a BDRIS application error
 export async function POST(request: NextRequest) {

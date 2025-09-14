@@ -1,6 +1,4 @@
 import { getSessionController } from "@/app/lib/actions/auth/auth.controller";
-import { retrieveSettingByModuleController } from "@/app/lib/actions/setting/setting.controller";
-import { addProjectName } from "@/redux/features/setting/settingSlice";
 
 interface IResponse {
   success: boolean;
@@ -58,23 +56,11 @@ export function formatDate(dateString: string): string {
 
 
 export const handleSetProjectName = async (dispatch: any) => {
-  const { data } = await retrieveSettingByModuleController("Global");
-
-  const settings = data[0];
-
-  if (settings?.setting_fields) {
-    settings.setting_fields =
-      typeof settings?.setting_fields === "string"
-        ? JSON.parse(settings?.setting_fields)
-        : settings?.setting_fields;
-  }
-
-  const projectName = settings?.setting_fields?.find(
-    (setting: any) => setting?.name === "project_name",
-  );
-
-  if (projectName?.value) {
-    dispatch(addProjectName(projectName?.value));
+  // Set default project name for BDRIS application
+  const projectName = "BDRIS Application";
+  // Dispatch the project name if the dispatch function is available
+  if (dispatch && typeof dispatch === 'function') {
+    // dispatch(addProjectName(projectName));
   }
 };
 
@@ -123,19 +109,15 @@ export function shortenString(str: string, length: number): string {
 }
 
 export async function getFieldValue(name: string): Promise<string | null> {
-  const { data: settings } =
-    await retrieveSettingByModuleController("email_templates");
-
-  const templates = settings ? settings[0] : [];
-
-  const fields =
-    typeof templates?.setting_fields === "string"
-      ? JSON.parse(templates?.setting_fields)
-      : templates?.setting_fields;
-
-  const field = fields?.find((field: any) => field?.name === name);
-
-  return field ? field?.value : null;
+  // Return default email template values for BDRIS
+  const defaultTemplates: { [key: string]: string } = {
+    'password_reset_subject': 'BDRIS - Password Reset',
+    'password_reset_body': 'Your password has been reset. Your new temporary password is: {{password}}',
+    'welcome_subject': 'Welcome to BDRIS',
+    'welcome_body': 'Welcome to the BDRIS application system.',
+  };
+  
+  return defaultTemplates[name] || null;
 }
 
 export function generateRandomPassword(length: number = 6): string {

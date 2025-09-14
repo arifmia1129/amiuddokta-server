@@ -54,9 +54,6 @@ export async function GET(
         userId: bdrisApplications.userId,
         applicationId: bdrisApplications.applicationId,
         applicationType: bdrisApplications.applicationType,
-        printLink: bdrisApplications.printLink,
-        printLinkExpiry: bdrisApplications.printLinkExpiry,
-        status: bdrisApplications.status,
         additionalInfo: bdrisApplications.additionalInfo,
         formData: bdrisApplications.formData,
         rawHtmlResponse: bdrisApplications.rawHtmlResponse,
@@ -94,9 +91,6 @@ export async function GET(
       userId: app.userId,
       applicationId: app.applicationId,
       applicationType: app.applicationType,
-      printLink: app.printLink,
-      printLinkExpiry: app.printLinkExpiry,
-      status: app.status,
       additionalInfo: app.additionalInfo,
       formData: app.formData,
       rawHtmlResponse: app.rawHtmlResponse,
@@ -131,80 +125,6 @@ export async function GET(
   }
 }
 
-// PATCH - Update BDRIS application status (admin only)
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const body = await request.json();
-    const { status, notes } = body;
-
-    if (!status) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Status is required",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate status
-    const validStatuses = ["submitted", "under_review", "approved", "rejected", "expired"];
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid status",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Update the application
-    const updatedApplication = await db
-      .update(bdrisApplications)
-      .set({
-        status: status as any,
-        updated_at: new Date(),
-        ...(notes && { 
-          additionalInfo: {
-            notes: notes
-          }
-        })
-      })
-      .where(eq(bdrisApplications.id, parseInt(params.id)))
-      .returning();
-
-    if (updatedApplication.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Application not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: updatedApplication[0],
-      message: `Application status updated to ${status}`,
-    });
-
-  } catch (error) {
-    console.error("Error updating BDRIS application:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to update application",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}
 
 // DELETE - Delete BDRIS application (admin only)
 export async function DELETE(
@@ -252,7 +172,7 @@ export const OPTIONS = async () => {
     headers: {
       "Access-Control-Allow-Credentials": "true",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,DELETE,PATCH,POST,PUT",
+      "Access-Control-Allow-Methods": "GET,DELETE,POST,PUT",
       "Access-Control-Allow-Headers":
         "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     },

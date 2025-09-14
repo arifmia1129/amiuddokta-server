@@ -87,18 +87,7 @@ export const bdrisApplications = pgTable("bdris_applications", {
     >()
     .notNull(),
 
-  // Print and tracking info
-  printLink: text("print_link"), // Full URL to print the application
-  printLinkExpiry: timestamp("print_link_expiry", {
-    mode: "date",
-    withTimezone: true,
-  }),
-
-  // Application status and response info
-  status: text("status")
-    .$type<"submitted" | "under_review" | "approved" | "rejected" | "expired">()
-    .notNull()
-    .default("submitted"),
+  // Application submission tracking - we are third party, no status management needed
 
   // Additional info extracted from response
   additionalInfo: jsonb("additional_info").$type<{

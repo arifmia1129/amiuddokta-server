@@ -23,7 +23,7 @@ export const changePasswordService = async (
 
   const isMatch = await bcrypt.compare(
     currentPassword,
-    user.password as string,
+    user.pin as string,
   );
   if (!isMatch) {
     return {
@@ -37,7 +37,7 @@ export const changePasswordService = async (
 
   await db
     .update(users)
-    .set({ password: hashedNewPassword })
+    .set({ pin: hashedNewPassword })
     .where(eq(users.id, userId));
 
   return {
@@ -65,7 +65,7 @@ export const changePasswordService = async (
 
 //     await db
 //       .update(users)
-//       .set({ password: hashedNewPassword })
+//       .set({ pin: hashedNewPassword })
 //       .where(eq(users.email, email));
 
 //     const templateName = await getFieldValue("admin_reset_password_template");
@@ -102,10 +102,10 @@ export const loginService = async (data: {
   email: string;
   password: string;
 }) => {
-  const res = await db.select().from(users).where(eq(users.email, data.email));
+  const res = await db.select().from(users).where(eq(users.phone, data.email));
   const user = res[0];
 
-  if (user?.email !== data.email) {
+  if (user?.phone !== data.email) {
     return {
       success: false,
       statusCode: 404,
@@ -113,7 +113,7 @@ export const loginService = async (data: {
     };
   }
 
-  const isMatch = await bcrypt.compare(data.password, user.password as string);
+  const isMatch = await bcrypt.compare(data.password, user.pin as string);
   if (!isMatch) {
     return {
       success: false,

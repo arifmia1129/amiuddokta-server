@@ -1,6 +1,6 @@
 "use client";
 
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import SimpleLayout from "@/components/Layouts/SimpleLayout";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAlert } from "react-confirm-alert";
@@ -333,7 +333,7 @@ export default function UserList() {
   };
 
   return (
-    <DefaultLayout>
+    <SimpleLayout>
       <div className="rounded-lg bg-white px-6 py-6 shadow-md dark:bg-black">
         {/* Header */}
         <div className="mb-6 flex flex-col items-start justify-between gap-4 dark:bg-black sm:flex-row sm:items-center">
@@ -713,6 +713,6 @@ export default function UserList() {
           </div>
         )}
       </div>
-    </DefaultLayout>
+    </SimpleLayout>
   );
 }

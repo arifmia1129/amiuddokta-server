@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bdrisApplicationErrors } from '@/db/schema';
+import { bdrisApplicationErrors } from '@/db/schema/applications';
 import { eq, desc, and } from 'drizzle-orm';
 import { decrypt } from '@/app/lib/actions/auth/auth.controller';
 

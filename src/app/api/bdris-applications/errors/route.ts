@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { bdrisApplicationErrors } from "@/db/schema";
-import { users } from "@/db/schema";
+import { bdrisApplicationErrors } from "@/db/schema/applications";
+import { users } from "@/db/schema/users";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 import { eq, desc } from "drizzle-orm";
 
@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
         errorMessage: bdrisApplicationErrors.errorMessage,
         applicationType: bdrisApplicationErrors.applicationType,
         formData: bdrisApplicationErrors.formData,
-        rawResponse: bdrisApplicationErrors.rawResponse,
         isResolved: bdrisApplicationErrors.isResolved,
         attemptedAt: bdrisApplicationErrors.created_at,
         user: {
@@ -78,7 +77,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { errorType, errorMessage, applicationType, formData, rawResponse } =
+    const { errorType, errorMessage, applicationType, formData } =
       await request.json();
 
     if (!errorType || !errorMessage || !applicationType) {
@@ -99,7 +98,6 @@ export async function POST(request: NextRequest) {
         errorMessage,
         applicationType,
         formData,
-        rawResponse,
         isResolved: false,
       })
       .returning();

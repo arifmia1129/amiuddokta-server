@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { users } from "@/db/schema/users";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";

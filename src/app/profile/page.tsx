@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import SimpleLayout from "@/components/Layouts/SimpleLayout";
 import { capitalizeFirstLetter } from "@/utils/functions";
 import { getCurrentUser } from "../lib/actions/user/user.controller";
 import { Mail, Phone, Calendar, Clock, UserCircle } from "lucide-react";
@@ -44,18 +43,21 @@ const Profile: React.FC = () => {
 
   if (isLoading) {
     return (
-      <DefaultLayout>
+      <SimpleLayout>
         <div className="flex h-screen items-center justify-center">
-          <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
         </div>
-      </DefaultLayout>
+      </SimpleLayout>
     );
   }
 
   return (
-    <DefaultLayout>
+    <SimpleLayout>
       <div className="mx-auto max-w-4xl">
-        <Breadcrumb pageName="Profile" />
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile</h1>
+          <p className="text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
+        </div>
 
         {user && (
           <div className="overflow-hidden rounded-xl bg-white shadow-md dark:bg-boxdark">
@@ -191,7 +193,7 @@ const Profile: React.FC = () => {
           </div>
         )}
       </div>
-    </DefaultLayout>
+    </SimpleLayout>
   );
 };
 

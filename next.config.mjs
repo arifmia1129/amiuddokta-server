@@ -45,7 +45,6 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  webpack5: true,
   webpack(config, { webpack }) {
     config.resolve.fallback = { fs: false };
 

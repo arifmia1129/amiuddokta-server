@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FileText,
   Users,
@@ -14,7 +14,9 @@ import {
   Bell,
   LogOut,
   User,
+  Settings,
 } from "lucide-react";
+import { logoutController, getSessionController } from "@/app/lib/actions/auth/auth.controller";
 
 interface NavItemType {
   title: string;
@@ -141,6 +143,79 @@ const NavItem: React.FC<{
   );
 };
 
+// Profile Dropdown Component
+const ProfileDropdown: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logoutController();
+      router.push("/auth/signin");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center space-x-2 rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+      >
+        <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+          <User className="h-4 w-4" />
+        </div>
+        <span className="hidden text-sm font-medium text-gray-700 dark:text-gray-300 sm:block">
+          Super Admin
+        </span>
+        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 rounded-md border border-gray-200 bg-white py-2 shadow-lg dark:border-gray-700 dark:bg-black">
+          <Link
+            href="/profile"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            onClick={() => setIsOpen(false)}
+          >
+            <User className="mr-3 h-4 w-4" />
+            Profile
+          </Link>
+          <Link
+            href="/settings"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            onClick={() => setIsOpen(false)}
+          >
+            <Settings className="mr-3 h-4 w-4" />
+            Settings
+          </Link>
+          <hr className="my-2 border-gray-200 dark:border-gray-700" />
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-800"
+          >
+            <LogOut className="mr-3 h-4 w-4" />
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Header Component
 const Header: React.FC<{
   sidebarOpen: boolean;
@@ -168,12 +243,7 @@ const Header: React.FC<{
           <button className="rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
             <Bell className="h-5 w-5" />
           </button>
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-gray-300"></div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Super Admin
-            </span>
-          </div>
+          <ProfileDropdown />
         </div>
       </div>
     </header>
@@ -258,6 +328,40 @@ const Sidebar: React.FC<{
 // Main Layout Component
 const SimpleLayout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  // Client-side authentication check
+  const checkAuth = async () => {
+    try {
+      const session = await getSessionController();
+      if (!session) {
+        console.log('No session found, redirecting to login');
+        router.push('/auth/signin');
+        return;
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log('Auth check failed, redirecting to login');
+      router.push('/auth/signin');
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600 dark:text-gray-400">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">

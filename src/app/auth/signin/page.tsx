@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { handleSetProjectName } from "@/utils/functions";
-import { login } from "@/app/lib/actions/user/user.controller";
+import { loginController } from "@/app/lib/actions/auth/auth.controller";
+import { getSessionController } from "@/app/lib/actions/auth/auth.controller";
 import {
   ShieldCheck,
   Phone,
@@ -21,12 +22,33 @@ import {
 
 const SignIn: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
   const { global } = useSelector((state: any) => state.setting);
   const dispatch = useDispatch();
 
+  // Check if user is already logged in
+  const checkExistingAuth = async () => {
+    try {
+      const session = await getSessionController();
+      if (session) {
+        // User is already logged in, redirect to dashboard
+        console.log('Existing session found, redirecting to dashboard');
+        window.location.href = '/admin/dashboard';
+        return;
+      }
+      console.log('No existing session found, staying on signin page');
+    } catch (error) {
+      // No valid session, user can stay on signin page
+      console.log('Auth check error:', error);
+    } finally {
+      setIsCheckingAuth(false);
+    }
+  };
+
   useEffect(() => {
     handleSetProjectName(dispatch);
+    checkExistingAuth();
   }, [dispatch]);
 
   const {
@@ -38,13 +60,14 @@ const SignIn: React.FC = () => {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      const res = await login({
-        phone: data.phone,
-        pin: data.pin,
+      const res = await loginController({
+        email: data.phone, // Note: using phone as email field
+        password: data.pin,
       });
       if (res?.success) {
         toast.success("Successfully logged in");
-        router.push("/admin/dashboard");
+        // Force a hard redirect to ensure cookies are picked up
+        window.location.href = "/admin/dashboard";
       } else {
         toast.error(res?.message || "Login failed");
       }
@@ -54,6 +77,18 @@ const SignIn: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Show loading spinner while checking existing auth
+  if (isCheckingAuth) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 to-gray-200">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">Checking authentication status...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="to-gray-200 flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 p-4">

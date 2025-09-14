@@ -63,6 +63,11 @@ export const loginController = async (data: {
 export const logoutController = async () => {
   // Destroy the session
   cookies().set("session", "", { expires: new Date(0) });
+  return {
+    success: true,
+    statusCode: 200,
+    message: "Successfully logged out",
+  };
 };
 
 export const getSessionController = async () => {
@@ -122,4 +127,11 @@ export const resetPasswordController = async (email: string) => {
       message: "Unauthorized",
     };
   }
+  
+  // TODO: Implement password reset logic
+  return {
+    success: true,
+    statusCode: 200,
+    message: "Password reset initiated",
+  };
 };

@@ -1,9 +1,13 @@
-import env from "@/env";
-import { pgDatabaseUrl } from "./serverConfig";
+// Determine if we're in production
+const isProduction = process.env.NODE_ENV === "production";
 
 const constant = {
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-  frontBaseUrl: "https://gonetwork.com.bd",
+  baseUrl:
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    (isProduction ? "http://me.nnsbd.org" : "http://localhost:3000"),
+  frontBaseUrl: isProduction
+    ? "http://me.nnsbd.org"
+    : "https://gonetwork.com.bd",
   siteBaseUrl: "",
   // databaseUrl:
   //   process.env.DATABASE ||

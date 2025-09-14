@@ -5,7 +5,7 @@ const AuthorInfo = ({ authorId }: { authorId: number }) => {
   const [author, setAuthor] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGetAuthorInfo = async (id: number) => {
+  const handleGetAuthorInfo = async (id: any) => {
     setIsLoading(true);
     const res = await retrieveUserByIdController(id);
     if (res?.data) {

@@ -9,7 +9,7 @@ const nextConfig = {
         source: "/api/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "*" }, // replace with your origin
+          { key: "Access-Control-Allow-Origin", value: process.env.NODE_ENV === 'production' ? "http://me.nnsbd.org" : "*" },
           {
             key: "Access-Control-Allow-Methods",
             value: "GET,DELETE,PATCH,POST,PUT",
@@ -29,6 +29,7 @@ const nextConfig = {
       "arifmia.netlify.app",
       "images.pexels.com",
       "localhost",
+      "me.nnsbd.org",
     ],
     unoptimized: true,
   },

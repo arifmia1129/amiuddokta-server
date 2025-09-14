@@ -1,4 +1,7 @@
 "use client";
+// Production optimizations - disable console logs in production
+import "@/lib/productionOptimizations";
+
 // import "jsvectormap/dist/css/jsvectormap.css";
 import "@/css/style.css";
 import "flatpickr/dist/flatpickr.min.css";

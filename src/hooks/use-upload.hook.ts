@@ -11,8 +11,6 @@ import axios from "axios";
 
 import { DROPZONE_OPTIONS, uploadFile } from "../lib";
 import constant from "@/constant";
-import { CreateMediaServerInput } from "@/app/lib/actions/media/media.validation";
-import { createMediaService } from "@/app/lib/actions/media/media.service";
 
 type ImageRes = {
   public_id: string;
@@ -91,7 +89,7 @@ export const useUpload = (userId: number) => {
   }) => {
     try {
       // Prepare database media object
-      const mediaData: CreateMediaServerInput = {
+      const mediaData = {
         title: mediaInfo.title,
         alt_text: mediaInfo.title,
         file_name: mediaInfo.fileName,
@@ -103,9 +101,7 @@ export const useUpload = (userId: number) => {
         user_id: 0,
       };
 
-      // Save to database
-      const savedMedia = await createMediaService(mediaData);
-      return savedMedia;
+      return mediaData;
     } catch (error) {
       console.error("Error saving media:", error);
       if (error instanceof Error) {

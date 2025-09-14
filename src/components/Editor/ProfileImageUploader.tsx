@@ -51,7 +51,9 @@ export default function ProfileImageUploader({
       if (isNeedUpload && userId) {
         await updateUserByIdController({
           id: userId,
-          profileImage: imageUrl,
+          data: {
+            profile_image: imageUrl,
+          },
         });
       }
     } catch (error) {

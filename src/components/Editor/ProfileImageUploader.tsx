@@ -1,4 +1,4 @@
-import { updateUserByIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { updateUserByIdController } from "@/app/lib/actions/user/user.controller";
 import constant from "@/constant";
 import axios from "axios";
 import Image from "next/image";

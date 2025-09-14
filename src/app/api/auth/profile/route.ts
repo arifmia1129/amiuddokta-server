@@ -1,6 +1,6 @@
 // src/app/api/auth/update-profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { retrieveUserByIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { retrieveUserByIdController } from "@/app/lib/actions/user/user.controller";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 
 export const GET = async (req: NextRequest) => {
@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
     const subscriberProfile = await retrieveUserByIdController(decodeUser.id);
 
     return NextResponse.json(subscriberProfile, {
-      status: subscriberProfile.statusCode,
+      status: subscriberProfile.status || 200,
     });
   } catch (error: any) {
     return NextResponse.json(

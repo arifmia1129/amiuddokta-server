@@ -1,5 +1,5 @@
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
-import { createUserController } from "@/app/lib/actions/user-bk/user.controller";
+import { createUserController } from "@/app/lib/actions/user/user.controller";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {

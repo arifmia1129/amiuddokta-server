@@ -2,7 +2,7 @@ import env from "@/env";
 import { pgDatabaseUrl } from "./serverConfig";
 
 const constant = {
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "https://me.gonetwork.com.bd",
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
   frontBaseUrl: "https://gonetwork.com.bd",
   siteBaseUrl: "",
   // databaseUrl:

@@ -18,6 +18,7 @@ import {
   createUserService,
   deleteUserService,
   getUserByPhoneService,
+  getUserByPhoneWithDetailsService,
   getUserByIdService,
   getUsersService,
   loginService,
@@ -176,12 +177,19 @@ export async function createUser(data: {
     const validatedData = createUserSchema.parse(data);
 
     // Check if phone already exists
-    const existingUser = await getUserByPhoneService(validatedData.phone);
+    const existingUser = await getUserByPhoneWithDetailsService(validatedData.phone);
     if (existingUser) {
       return {
         success: false,
-        message: "Phone number already in use",
-        status: 400,
+        message: `Phone number ${validatedData.phone} is already registered to ${existingUser.name} (ID: ${existingUser.id}). Please use a different phone number or update the existing user.`,
+        data: {
+          conflictUserId: existingUser.id,
+          conflictUserName: existingUser.name,
+          conflictUserPhone: existingUser.phone,
+          conflictUserRole: existingUser.role,
+          conflictUserStatus: existingUser.status,
+        },
+        status: 409, // Conflict status code
       };
     }
 
@@ -237,12 +245,19 @@ export async function updateUser(params: {
 
       // Check if phone is being changed and if it already exists
       if (validatedData.phone) {
-        const existingUser = await getUserByPhoneService(validatedData.phone);
-        if (existingUser && existingUser.id !== params.id) {
+        const existingUser = await getUserByPhoneWithDetailsService(validatedData.phone);
+        if (existingUser && existingUser.id !== Number(params.id)) {
           return {
             success: false,
-            message: "Phone number already in use",
-            status: 400,
+            message: `Phone number ${validatedData.phone} is already registered to ${existingUser.name} (ID: ${existingUser.id}). Please use a different phone number.`,
+            data: {
+              conflictUserId: existingUser.id,
+              conflictUserName: existingUser.name,
+              conflictUserPhone: existingUser.phone,
+              conflictUserRole: existingUser.role,
+              conflictUserStatus: existingUser.status,
+            },
+            status: 409, // Conflict status code
           };
         }
       }
@@ -503,3 +518,13 @@ export async function changePin(data: {
     };
   }
 }
+
+// Legacy function exports for backward compatibility
+export const createUserController = createUser;
+export const retrieveUserListController = getUsers;
+export const retrieveUserByIdController = getUserById;
+export const updateUserByIdController = updateUser;
+export const deleteUserByIdController = deleteUser;
+export const searchUserController = getUsers; // Using getUsers for search functionality
+export const retrieveAdminListController = getUsers; // Using getUsers for admin list
+export const retrieveSubAgentsByAgentIdController = getUsers; // Using getUsers for sub-agents

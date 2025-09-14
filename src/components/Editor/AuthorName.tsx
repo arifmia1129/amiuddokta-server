@@ -1,4 +1,4 @@
-import { retrieveUserByIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { retrieveUserByIdController } from "@/app/lib/actions/user/user.controller";
 import React, { useEffect, useState } from "react";
 
 const AuthorInfo = ({ authorId }: { authorId: number }) => {

@@ -1,6 +1,6 @@
 // src/app/api/auth/update-profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { updateUserByIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { updateUserByIdController } from "@/app/lib/actions/user/user.controller";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 
 export const PATCH = async (req: NextRequest) => {
@@ -26,7 +26,7 @@ export const PATCH = async (req: NextRequest) => {
     });
 
     return NextResponse.json(updateProfileResult, {
-      status: updateProfileResult.statusCode,
+      status: updateProfileResult.status || 200,
     });
   } catch (error: any) {
     return NextResponse.json(

@@ -1,6 +1,6 @@
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
-import { createUserController } from "@/app/lib/actions/user-bk/user.controller";
-import { deleteUserByIdController } from "@/app/lib/actions/user-bk/user.controller"; // Assuming you have this controller
+import { createUserController } from "@/app/lib/actions/user/user.controller";
+import { deleteUserByIdController } from "@/app/lib/actions/user/user.controller"; // Assuming you have this controller
 import { NextRequest, NextResponse } from "next/server";
 
 export const DELETE = async (req: NextRequest) => {

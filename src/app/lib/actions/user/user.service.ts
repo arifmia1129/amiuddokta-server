@@ -27,10 +27,19 @@ export async function getUsersService(options: UserFilterInput) {
     sortOrder = "desc",
   } = options;
 
-  // Build search conditions
+  // Build search conditions - enhanced to search across multiple fields
   const searchCondition = search
-    ? createSearchCondition(search, ["name", "phone"])
+    ? createSearchCondition(search, ["name", "phone", "center_name", "center_address"])
     : sql`1=1`;
+
+  // Debug logging for search
+  if (search) {
+    console.log("🔍 Search Debug:", {
+      searchTerm: search,
+      fields: ["name", "phone", "center_name", "center_address"],
+      cleanedSearch: search.trim().toLowerCase()
+    });
+  }
 
   // Build status condition
   const statusCondition = status ? sql`status = ${status}` : sql`1=1`;
@@ -142,20 +151,51 @@ export async function getUserByPhoneService(phone: string) {
   return result[0] || null;
 }
 
+// Get user by phone with additional info for update scenarios
+export async function getUserByPhoneWithDetailsService(phone: string) {
+  const result = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      phone: users.phone,
+      status: users.status,
+      role: users.role,
+      created_at: users.created_at,
+    })
+    .from(users)
+    .where(eq(users.phone, phone))
+    .limit(1);
+
+  return result[0] || null;
+}
+
 // Create new user
 export async function createUserService(userData: CreateUserInput) {
   // Hash PIN
   const hashedPin = await hashPin(userData.pin);
 
+  // Prepare insert data matching schema
+  const insertData = {
+    name: userData.name,
+    phone: userData.phone,
+    pin: hashedPin,
+    role: userData.role as "super_admin" | "admin" | "entrepreneur",
+    status: userData.status as "active" | "inactive" | "suspended",
+    center_name: userData.center_name,
+    center_address: userData.center_address,
+    division: userData.division,
+    district: userData.district,
+    upazila: userData.upazila,
+    union: userData.union,
+    ward: userData.ward,
+    created_at: new Date(),
+    updated_at: new Date(),
+  };
+
   // Insert user
   const result = await db
     .insert(users)
-    .values({
-      ...userData,
-      pin: hashedPin,
-      created_at: new Date(),
-      updated_at: new Date(),
-    })
+    .values(insertData)
     .returning({
       id: users.id,
       name: users.name,

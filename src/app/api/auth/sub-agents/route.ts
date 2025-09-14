@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { retrieveSubAgentsByAgentIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { retrieveSubAgentsByAgentIdController } from "@/app/lib/actions/user/user.controller";
 import { decrypt } from "@/app/lib/actions/auth/auth.controller";
 
 export const GET = async (req: NextRequest) => {
@@ -19,13 +19,10 @@ export const GET = async (req: NextRequest) => {
     const page = Number(url.searchParams.get("page")) || 1;
     const pageSize = Number(url.searchParams.get("pageSize")) || 10;
 
-    const response = await retrieveSubAgentsByAgentIdController(
-      decodeUser?.id,
-      {
-        page,
-        pageSize,
-      },
-    );
+    const response = await retrieveSubAgentsByAgentIdController({
+      page,
+      limit: pageSize,
+    });
     return NextResponse.json(response);
   } catch (error: any) {
     return NextResponse.json(

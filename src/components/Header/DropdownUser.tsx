@@ -8,7 +8,7 @@ import {
 import { useRouter } from "next/navigation";
 import { capitalizeFirstLetter } from "@/utils/functions";
 import { MdEmail, MdOutlinePassword } from "react-icons/md";
-import { retrieveUserByIdController } from "@/app/lib/actions/user-bk/user.controller";
+import { retrieveUserByIdController } from "@/app/lib/actions/user/user.controller";
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

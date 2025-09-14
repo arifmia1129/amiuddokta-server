@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { getBdrisApplications, getBdrisApplicationErrors } from "@/app/lib/actions/bdris-applications/bdris-applications.service";
 import Link from "next/link";
 import {
   Search as SearchIcon,
@@ -70,34 +71,20 @@ export default function BdrisApplicationList() {
   const handleGetData = async () => {
     setIsLoading(true);
     try {
-      // Fetch successful applications
-      const queryParams = new URLSearchParams({
-        page: currentPage.toString(),
-        limit: limit.toString(),
-        sort: "created_at",
-        order: "desc",
-        ...(selectedType !== "ALL" && { type: selectedType }),
-      });
-
-      const [appsResponse, errorsResponse] = await Promise.all([
-        fetch(`/api/bdris-applications?admin=true&${queryParams}`),
-        fetch(`/api/bdris-applications/errors`)
+      const [appsData, errorsData] = await Promise.all([
+        getBdrisApplications({
+          page: currentPage,
+          limit,
+          type: selectedType,
+          isAdminContext: true
+        }),
+        getBdrisApplicationErrors()
       ]);
       
-      const appsData = await appsResponse.json();
-      const errorsData = await errorsResponse.json();
-      
-      if (appsData.success) {
-        setApplicationList(appsData.data.applications || []);
-        setTotal(appsData.data.total || 0);
-      } else {
-        toast.error("Failed to fetch applications");
-      }
-
-      if (errorsData.success) {
-        setFailedApplications(errorsData.data || []);
-        setFailedTotal(errorsData.total || 0);
-      }
+      setApplicationList(appsData.applications || []);
+      setTotal(appsData.total || 0);
+      setFailedApplications(errorsData || []);
+      setFailedTotal(errorsData.length || 0);
     } catch (error) {
       toast.error("Failed to fetch applications");
       console.error("Error fetching applications:", error);
@@ -113,22 +100,16 @@ export default function BdrisApplicationList() {
   const onSearch = async (searchText: string) => {
     setIsLoading(true);
     try {
-      const queryParams = new URLSearchParams({
-        page: "1",
-        limit: limit.toString(),
+      const data = await getBdrisApplications({
+        page: 1,
+        limit,
         search: searchText,
+        isAdminContext: true
       });
-
-      const response = await fetch(`/api/bdris-applications?admin=true&${queryParams}`);
-      const data = await response.json();
       
-      if (data.success) {
-        setApplicationList(data.data.applications);
-        setTotal(data.data.total);
-        setCurrentPage(1);
-      } else {
-        toast.error("Search failed");
-      }
+      setApplicationList(data.applications);
+      setTotal(data.total);
+      setCurrentPage(1);
     } catch (error) {
       toast.error("Search failed");
     } finally {
@@ -286,8 +267,10 @@ export default function BdrisApplicationList() {
               </div>
               <Pagination
                 currentPage={currentPage}
-                totalPages={Math.ceil(total / limit)}
-                onPageChange={setCurrentPage}
+                setCurrentPage={setCurrentPage}
+                limit={limit}
+                setLimit={setLimit}
+                total={total}
               />
             </div>
           </div>

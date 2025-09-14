@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { getBdrisApplicationErrors } from "@/app/lib/actions/bdris-applications/bdris-applications.service";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -39,14 +40,8 @@ export default function FailedApplications() {
   const fetchFailedApplications = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/bdris-applications/errors");
-      const data = await response.json();
-      
-      if (data.success) {
-        setApplications(data.data || []);
-      } else {
-        toast.error("Failed to fetch failed applications");
-      }
+      const data = await getBdrisApplicationErrors();
+      setApplications(data || []);
     } catch (error) {
       toast.error("Failed to fetch failed applications");
       console.error("Error:", error);
@@ -169,15 +164,6 @@ export default function FailedApplications() {
                         >
                           <FileText className="h-4 w-4" />
                           <span>Form Data</span>
-                        </button>
-                      )}
-                      {app.rawResponse && (
-                        <button
-                          onClick={() => setShowHtmlPreview(app.rawResponse!)}
-                          className="flex items-center space-x-1 text-orange-600 hover:text-orange-800 text-sm font-medium"
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span>Raw Response</span>
                         </button>
                       )}
                     </div>

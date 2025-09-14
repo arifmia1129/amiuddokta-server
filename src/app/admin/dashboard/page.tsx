@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
                 <h1 className="text-2xl font-bold text-slate-800">
-                  BDRIS Admin Dashboard
+                  Quick Apply Dashboard
                 </h1>
                 <p className="mt-1 text-slate-500">
                   {currentTime.toLocaleDateString("en-US", {

@@ -9,6 +9,7 @@ import Image from "next/image";
 import { formatDate } from "@/utils/functions";
 import Loader from "@/components/common/Loader";
 import { deleteUser, getUsers } from "@/app/lib/actions/user/user.controller";
+import { resetPasswordService, updateUserStatusService } from "@/app/lib/actions/auth/auth.service";
 import {
   Users,
   PlusCircle,
@@ -258,18 +259,12 @@ export default function UserList() {
           className: "bg-blue-500 text-white px-4 py-2 rounded-md",
           onClick: async () => {
             try {
-              const response = await fetch(`/api/auth/reset-password`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, isAdminReset: true }),
-              });
-
-              const result = await response.json();
+              const result = await resetPasswordService(userId, true);
               
               if (result.success) {
                 toast.success(`Password reset successfully. New temporary password: ${result.temporaryPassword}`);
               } else {
-                toast.error("Failed to reset password");
+                toast.error(result.message || "Failed to reset password");
               }
             } catch (error) {
               toast.error("Failed to reset password");
@@ -297,19 +292,13 @@ export default function UserList() {
           className: `${newStatus === "active" ? "bg-green-500" : "bg-red-500"} text-white px-4 py-2 rounded-md`,
           onClick: async () => {
             try {
-              const response = await fetch(`/api/auth/update-user-status`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId, status: newStatus }),
-              });
-
-              const result = await response.json();
+              const result = await updateUserStatusService(userId, newStatus);
               
               if (result.success) {
                 toast.success(`User ${newStatus === "active" ? "activated" : "deactivated"} successfully`);
                 handleGetData(); // Refresh the data
               } else {
-                toast.error("Failed to update user status");
+                toast.error(result.message || "Failed to update user status");
               }
             } catch (error) {
               toast.error("Failed to update user status");

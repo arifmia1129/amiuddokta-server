@@ -90,7 +90,6 @@ export const bdrisApplicationErrors = pgTable("bdris_application_errors", {
 
   // Form data that caused the error (for debugging)
   formData: jsonb("form_data"),
-  rawResponse: text("raw_response"), // HTML response that caused parsing issues
 
   // Resolution tracking
   isResolved: boolean("is_resolved").default(false),

@@ -30,7 +30,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-// BDRIS Admin Navigation - Single role system
+// Quick Apply Navigation - Single role system
 const adminNavItems: NavItemType[] = [
   {
     title: "Dashboard",
@@ -38,7 +38,7 @@ const adminNavItems: NavItemType[] = [
     icon: <Home className="h-4 w-4" />,
   },
   {
-    title: "BDRIS Applications",
+    title: "Applications",
     href: "/admin/bdris-applications",
     icon: <FileText className="h-4 w-4" />,
     submenu: [
@@ -215,7 +215,7 @@ const Sidebar: React.FC<{
                 <div className="h-8 w-8 rounded bg-blue-600"></div>
                 {isExpanded && (
                   <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                    BDRIS Admin
+                    Quick Apply
                   </h1>
                 )}
               </div>

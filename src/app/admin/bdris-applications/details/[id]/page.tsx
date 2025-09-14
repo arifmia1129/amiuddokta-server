@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
+import { getBdrisApplicationById } from "@/app/lib/actions/bdris-applications/bdris-applications.service";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -37,7 +38,6 @@ interface BdrisApplicationDetails {
     documentSubmissionRequired?: boolean;
   };
   formData?: any;
-  rawHtmlResponse?: string;
   responseExtracted: boolean;
   submittedAt: string;
   lastChecked?: string;
@@ -76,21 +76,12 @@ export default function BdrisApplicationDetails() {
   const [application, setApplication] =
     useState<BdrisApplicationDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showRawHtml, setShowRawHtml] = useState(false);
 
   const fetchApplicationDetails = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `/api/bdris-applications/${params.id}?admin=true`,
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        setApplication(data.data);
-      } else {
-        toast.error("Failed to fetch application details");
-      }
+      const data = await getBdrisApplicationById(params.id as string);
+      setApplication(data);
     } catch (error) {
       toast.error("Failed to fetch application details");
       console.error("Error fetching application details:", error);
@@ -299,30 +290,6 @@ export default function BdrisApplicationDetails() {
                     {JSON.stringify(application.formData, null, 2)}
                   </pre>
                 </div>
-              </div>
-            )}
-
-            {/* Raw HTML Response */}
-            {application.rawHtmlResponse && (
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-gray-900 text-lg font-semibold">
-                    HTML Response
-                  </h3>
-                  <button
-                    onClick={() => setShowRawHtml(!showRawHtml)}
-                    className="text-sm font-medium text-blue-600 hover:text-blue-800"
-                  >
-                    {showRawHtml ? "Hide" : "Show"} HTML
-                  </button>
-                </div>
-                {showRawHtml && (
-                  <div className="bg-gray-50 max-h-96 overflow-auto rounded-lg p-4">
-                    <pre className="text-gray-700 whitespace-pre-wrap text-xs">
-                      {application.rawHtmlResponse}
-                    </pre>
-                  </div>
-                )}
               </div>
             )}
           </div>

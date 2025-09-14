@@ -98,6 +98,102 @@ export const changePasswordService = async (
 //   }
 // };
 
+export const resetPasswordService = async (userId: number, isAdminReset = false) => {
+  try {
+    // Find the user
+    const userResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (userResult.length === 0) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: "User not found",
+      };
+    }
+
+    // Generate a temporary password (8 characters: 4 digits + 4 letters)
+    const generateTempPassword = () => {
+      const digits = Math.floor(1000 + Math.random() * 9000).toString();
+      const letters = Math.random().toString(36).substring(2, 6).toUpperCase();
+      return digits + letters;
+    };
+
+    const temporaryPassword = generateTempPassword();
+    
+    // Hash the temporary password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(temporaryPassword, saltRounds);
+
+    // Update the user's password (using PIN field for BDRIS users)
+    await db
+      .update(users)
+      .set({
+        pin: hashedPassword,
+        updated_at: new Date(),
+      })
+      .where(eq(users.id, userId));
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: "Password reset successfully",
+      temporaryPassword: isAdminReset ? temporaryPassword : undefined,
+    };
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return {
+      success: false,
+      statusCode: 500,
+      message: "Failed to reset password",
+    };
+  }
+};
+
+export const updateUserStatusService = async (userId: number, status: string) => {
+  try {
+    // Find the user first
+    const userResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (userResult.length === 0) {
+      return {
+        success: false,
+        statusCode: 404,
+        message: "User not found",
+      };
+    }
+
+    // Update the user's status
+    await db
+      .update(users)
+      .set({
+        status: status as any,
+        updated_at: new Date(),
+      })
+      .where(eq(users.id, userId));
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: "User status updated successfully",
+    };
+  } catch (error) {
+    console.error("Update user status error:", error);
+    return {
+      success: false,
+      statusCode: 500,
+      message: "Failed to update user status",
+    };
+  }
+};
+
 export const loginService = async (data: {
   email: string;
   password: string;

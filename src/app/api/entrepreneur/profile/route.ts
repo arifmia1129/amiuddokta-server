@@ -1,33 +1,10 @@
-// src/app/api/agent/profile/route.ts
-import { getUserById } from "@/app/lib/actions/user/user.controller";
-import { NextRequest, NextResponse } from "next/server";
-import { decrypt } from "@/app/lib/actions/auth/auth.controller";
+import { NextRequest } from "next/server";
+import { 
+  getEntrepreneurProfileController 
+} from "@/app/lib/actions/entrepreneur/entrepreneur.controller";
 
 export const GET = async (req: NextRequest) => {
-  try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader) {
-      return NextResponse.json(
-        { success: false, message: "Authorization header missing or invalid" },
-        { status: 401 },
-      );
-    }
-
-    const decodeUser = await decrypt(authHeader);
-
-    console.log(decodeUser);
-
-    const profileResult = await getUserById({ id: decodeUser?.id });
-
-    return NextResponse.json(profileResult, {
-      status: profileResult.status || 200,
-    });
-  } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 },
-    );
-  }
+  return await getEntrepreneurProfileController(req);
 };
 
 export const OPTIONS = async () => {

@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
 
   const announcements = [
     {
-      title: "BDRIS API Update",
+      title: "API Update",
       description: "New birth certificate validation rules implemented",
       date: "Sep 12, 2025",
     },
@@ -124,7 +124,7 @@ const Dashboard: React.FC = () => {
   ];
 
   const tasks = [
-    { title: "Review pending BDRIS applications", priority: "high", count: 45 },
+    { title: "Review pending applications", priority: "high", count: 45 },
     { title: "Process failed applications", priority: "high", count: 12 },
     { title: "Update user profiles", priority: "medium", count: 8 },
     { title: "Generate monthly report", priority: "low", count: 1 },
@@ -381,7 +381,7 @@ const Dashboard: React.FC = () => {
                       count: "856",
                     },
                     {
-                      title: "BDRIS Applications",
+                      title: "Applications",
                       icon: <FileText className="h-5 w-5" />,
                       href: "/admin/bdris-applications",
                       count: "1,234",

@@ -136,7 +136,7 @@ const roleRoutes = {
       icon: <Home className="h-4 w-4" />,
     },
     {
-      title: "BDRIS Applications",
+      title: "Applications",
       href: "/admin/bdris-applications",
       icon: <FileText className="h-4 w-4" />,
       submenu: [
@@ -181,7 +181,7 @@ const roleRoutes = {
       icon: <Home className="h-4 w-4" />,
     },
     {
-      title: "BDRIS Applications",
+      title: "Applications",
       href: "/admin/bdris-applications",
       icon: <FileText className="h-4 w-4" />,
       submenu: [

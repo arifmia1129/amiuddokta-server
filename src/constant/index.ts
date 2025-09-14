@@ -4,9 +4,9 @@ const isProduction = process.env.NODE_ENV === "production";
 const constant = {
   baseUrl:
     process.env.NEXT_PUBLIC_BASE_URL ||
-    (isProduction ? "http://me.nnsbd.org" : "http://localhost:3000"),
+    (isProduction ? "https://hq.nnsbd.org" : "http://localhost:3000"),
   frontBaseUrl: isProduction
-    ? "http://me.nnsbd.org"
+    ? "https://hq.nnsbd.org"
     : "https://gonetwork.com.bd",
   siteBaseUrl: "",
   // databaseUrl:
